@@ -187,6 +187,22 @@ select {
   opacity: 0.9;
 }
 
+.price-preview {
+  margin-top: 12px;
+  padding: 14px 16px;
+  background: #fff0f7;
+  border: 2px solid #ffd1e8;
+  border-radius: 12px;
+  color: #ff4fa0;
+  font-size: 15px;
+  text-align: center;
+}
+
+#region,
+#method {
+  margin-bottom: 12px;
+}
+
 .payment-box {
   margin-top: 25px;
 

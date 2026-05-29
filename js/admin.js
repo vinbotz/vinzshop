@@ -13,6 +13,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import { buildOrderEmbed, sendDiscordWebhook } from "./webhook.js";
+import { formatTotal, getRegionLabel } from "./pricing.js";
 
 const ordersContainer = document.getElementById("ordersContainer");
 
@@ -71,9 +72,11 @@ onSnapshot(ordersRef, (snapshot) => {
           </div>
 
           <div class="order-info">
+            <p><strong>🌍 Negara:</strong> ${data.region ? getRegionLabel(data.region) : "🇮🇩 Indonesia (Rupiah)"}</p>
             <p><strong>👤 Username:</strong> ${data.username}</p>
             <p><strong>💰 Robux:</strong> ${data.robux}</p>
             <p><strong>💳 Metode:</strong> ${data.method}</p>
+            <p><strong>💵 Total:</strong> ${formatTotal(data.region || "indo", data.total || 0)}</p>
             <p><strong>📱 WhatsApp:</strong> ${data.whatsapp}</p>
             ${data.paymentMethod ? `<p><strong>💸 Metode Bayar:</strong> ${data.paymentMethod}</p>` : ""}
           </div>
@@ -158,7 +161,6 @@ window.acceptOrder = async (orderId) => {
   try {
     await updateDoc(orderDoc, {
       status: "payment",
-      total: 150000,
     });
 
     button.textContent = "✅ Pembayaran Dikirim!";

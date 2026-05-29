@@ -9,6 +9,7 @@ import {
 
 import { buildOrderEmbed, sendDiscordWebhook } from "./webhook.js";
 import { initLiveChat, resetLiveChat } from "./chat.js";
+import { formatTotal, getRegionLabel, lookupPrice } from "./pricing.js";
 
 const paymentModal = document.getElementById("paymentModal");
 
@@ -92,7 +93,8 @@ function resetCustomerSession({ redirectToIndex = false, showMessage = "" } = {}
   if (paymentContent) paymentContent.innerHTML = "";
 
   const orderForm = document.getElementById("orderForm");
-  const method = document.getElementById("method");
+  const regionSelect = document.getElementById("region");
+  const methodSelect = document.getElementById("method");
   const dynamicForm = document.getElementById("dynamicForm");
   const statusBox = document.getElementById("statusBox");
   const tutorialSelect = document.getElementById("tutorialSelect");
@@ -237,41 +239,28 @@ function openPaymentModal(data) {
 
     <p>
       Total:
-      Rp ${data.total || "-"}
+      ${formatTotal(data.region || "indo", data.total || 0)}
     </p>
+    ${
+      data.region === "malay"
+        ? `<p style="color:#666;font-size:14px;">🇲🇾 Bayar melalui TNG eWallet. Lihat tutorial TNG di halaman order.</p>`
+        : ""
+    }
 
     <div class="payment-buttons">
-
-      <button
-        onclick="
-          selectPayment(
-            'DANA'
-          )
-        "
-      >
-        💳 DANA
+      ${
+        data.region === "malay"
+          ? `
+      <button onclick="selectPayment('TNG')" style="width:100%;">
+        📱 Bayar via TNG
       </button>
-
-      <button
-        onclick="
-          selectPayment(
-            'GOPAY'
-          )
-        "
-      >
-        💳 GOPAY
-      </button>
-
-      <button
-        onclick="
-          selectPayment(
-            'SPAY'
-          )
-        "
-      >
-        💳 SPAY
-      </button>
-
+      `
+          : `
+      <button onclick="selectPayment('DANA')">💳 DANA</button>
+      <button onclick="selectPayment('GOPAY')">💳 GOPAY</button>
+      <button onclick="selectPayment('SPAY')">💳 SPAY</button>
+      `
+      }
     </div>
 
     <button
@@ -356,6 +345,31 @@ window.selectPayment = (payment) => {
 
       <button onclick="validateAndSendProof('GOPAY')" style="margin-top: 10px;">
         ✅ Kirim Bukti Transfer
+      </button>
+
+    </div>
+
+    `;
+  } else if (payment === "TNG") {
+    html = `
+
+    <div class="payment-box">
+
+      <h3>📱 TNG eWallet (Malaysia)</h3>
+
+      <p style="text-align: center; color: #666; margin-bottom: 15px;">
+        Transfer <strong>${formatTotal("malay", lastOrderData?.total || 0)}</strong> melalui TNG,
+        kemudian upload screenshot bukti bayar di bawah.
+      </p>
+
+      <input
+        id="fileInput-TNG"
+        type="file"
+        accept="image/*"
+      >
+
+      <button onclick="validateAndSendProof('TNG')" style="margin-top: 10px;">
+        ✅ Upload Bukti TNG
       </button>
 
     </div>
@@ -552,19 +566,27 @@ window.addEventListener("click", (e) => {
   orderForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const method = document.getElementById("method").value;
+    const region = document.getElementById("region")?.value || "";
+    const method = document.getElementById("method")?.value || "";
     const username = document.getElementById("username")?.value?.trim() || "";
 
     const robuxEl = document.getElementById("robux");
-    const robuxRaw = robuxEl?.value || robuxEl?.innerText || "";
+    const robuxRaw = robuxEl?.value || "";
     const robux = Number(String(robuxRaw).replace(/[^0-9]/g, ""));
 
     const password = document.getElementById("password")?.value?.trim() || "";
     const recovery = document.getElementById("recovery")?.value?.trim() || "";
 
+    if (!region) return alert("Negara / region wajib dipilih");
+    if (!method) return alert("Metode wajib dipilih");
     if (!username) return alert("Username wajib diisi");
     if (!robux || Number.isNaN(robux))
-      return alert("Jumlah robux wajib dipilih");
+      return alert("Paket robux wajib dipilih");
+
+    const priceInfo = lookupPrice(region, method, robux);
+    if (!priceInfo) {
+      return alert("Paket robux tidak valid. Silakan pilih ulang.");
+    }
 
     const orderId =
       crypto && crypto.randomUUID && crypto.randomUUID()
@@ -575,19 +597,20 @@ window.addEventListener("click", (e) => {
     localStorage.setItem("orderLastActive", String(Date.now()));
 
     const createdAt = new Date().toISOString();
-    const total = 150000;
+    const total = priceInfo.total;
 
     const orderDocData = {
       username,
+      region,
       method,
       robux,
       whatsapp: "-",
       status: "pending",
       createdAt,
       total,
+      currency: priceInfo.currency,
       paymentOpened: false,
       resetForCustomer: false,
-      // VILOG
       ...(method === "VILOG" ? { password, recovery } : {}),
     };
 
@@ -601,9 +624,15 @@ window.addEventListener("click", (e) => {
             color: 0x00c2ff,
             fields: [
               { name: "Order ID", value: orderId, inline: false },
+              { name: "Negara", value: getRegionLabel(region), inline: true },
               { name: "Username", value: username, inline: true },
               { name: "Metode", value: method, inline: true },
               { name: "Robux", value: String(robux), inline: true },
+              {
+                name: "Total",
+                value: formatTotal(region, total),
+                inline: true,
+              },
             ],
           }),
         ],

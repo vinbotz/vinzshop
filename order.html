@@ -22,12 +22,14 @@
         </a>
 
       <form id="orderForm">
-        <select id="method" required>
-          <option value="">Pilih Metode</option>
+        <select id="region" required>
+          <option value="">Pilih negara / Select country</option>
+          <option value="indo">🇮🇩 Indonesia (Rupiah)</option>
+          <option value="malay">🇲🇾 Malaysia (Ringgit)</option>
+        </select>
 
-          <option value="Gamepass">Gamepass</option>
-
-          <option value="VILOG">VILOG</option>
+        <select id="method" required disabled>
+          <option value="">Pilih metode / Select method</option>
         </select>
 
         <!-- FORM DINAMIS -->
@@ -89,100 +91,6 @@
     </footer>
 
     <script>
-      const method = document.getElementById("method");
-
-      const dynamicForm = document.getElementById("dynamicForm");
-
-      const robuxOptions = `
-      
-        <option value="">
-          Pilih Robux
-        </option>
-
-        <option>80 Robux</option>
-        <option>160 Robux</option>
-        <option>240 Robux</option>
-        <option>320 Robux</option>
-        <option>500 Robux</option>
-        <option>1000 Robux</option>
-        <option>1500 Robux</option>
-        <option>2000 Robux</option>
-        <option>2500 Robux</option>
-        <option>3000 Robux</option>
-        <option>3500 Robux</option>
-        <option>4000 Robux</option>
-        <option>4500 Robux</option>
-        <option>5000 Robux</option>
-        <option>5500 Robux</option>
-        <option>6000 Robux</option>
-        <option>6500 Robux</option>
-        <option>7000 Robux</option>
-        <option>7500 Robux</option>
-        <option>8000 Robux</option>
-        <option>8500 Robux</option>
-        <option>9000 Robux</option>
-        <option>9500 Robux</option>
-        <option>10000 Robux</option>
-
-      `;
-
-      method.addEventListener("change", () => {
-        if (method.value === "Gamepass") {
-          dynamicForm.innerHTML = `
-
-              <input
-                type="text"
-                id="username"
-                placeholder="Username Roblox"
-                required
-              />
-
-              <select
-                id="robux"
-                required
-              >
-
-                ${robuxOptions}
-
-              </select>
-
-            `;
-        } else if (method.value === "VILOG") {
-          dynamicForm.innerHTML = `
-
-              <input
-                type="text"
-                id="username"
-                placeholder="Username Roblox"
-                required
-              />
-
-              <input
-                type="password"
-                id="password"
-                placeholder="Password Roblox"
-                required
-              />
-
-              <textarea
-                id="recovery"
-                placeholder="5 Kode Pemulihan (pisahkan enter)"
-                required
-              ></textarea>
-
-              <select
-                id="robux"
-                required
-              >
-
-                ${robuxOptions}
-
-              </select>
-
-            `;
-        }
-      });
-
       const tutorialSelect = document.getElementById("tutorialSelect");
       const tutorialVideo = document.getElementById("tutorialVideo");
 
@@ -211,6 +119,8 @@
         });
       }
     </script>
+
+    <script type="module" src="./js/order-form.js"></script>
 
     <script type="module" src="./js/order.js"></script>
 
