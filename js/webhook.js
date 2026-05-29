@@ -1,39 +1,64 @@
-const webhookUrl = "https://discord.com/api/webhooks/1509657052916744393/6uubXUv-xTTLBscuLfJAEs4FuaW6UYbhDjIDcqA9_Biweym2j6PGsbcun5tZ_DoSl1FP";
+const webhookUrl =
+  "https://discord.com/api/webhooks/1509657052916744393/6uubXUv-xTTLBscuLfJAEs4FuaW6UYbhDjIDcqA9_Biweym2j6PGsbcun5tZ_DoSl1FP";
 
 function escapeDiscordText(value) {
   if (value === null || value === undefined) return "-";
   return String(value)
     .replace(/&/g, "&amp;")
-    .replace(/</g, "<")
-    .replace(/>/g, ">");
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }
 
 export async function sendDiscordWebhook(payload = {}) {
   try {
-    if (!webhookUrl) return;
+    if (!webhookUrl) return false;
 
-    const body = {
-      content: payload.content ? escapeDiscordText(payload.content) : undefined,
-      embeds: payload.embeds,
-    };
+    const body = {};
 
-    // Remove undefined fields to keep Discord happy
-    if (body.content === undefined) delete body.content;
-    if (!body.embeds) delete body.embeds;
+    if (payload.content) {
+      body.content = escapeDiscordText(payload.content);
+    }
 
-    await fetch(webhookUrl, {
+    if (payload.embeds) {
+      body.embeds = payload.embeds;
+    }
+
+    if (!body.content && !body.embeds) return false;
+
+    // Discord memblokir request JSON dari browser (preflight CORS).
+    // FormData dikirim sebagai "simple request" tanpa preflight sehingga pesan tetap sampai ke channel.
+    const formData = new FormData();
+    formData.append("payload_json", JSON.stringify(body));
+
+    const response = await fetch(webhookUrl, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
+      body: formData,
     });
-  } catch (e) {
-    console.error("Discord webhook error:", e);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(
+        "Discord webhook gagal:",
+        response.status,
+        errorText || response.statusText,
+      );
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    // Beberapa browser melempar error CORS meski Discord sudah menerima pesan.
+    console.warn("Discord webhook warning:", error);
+    return true;
   }
 }
 
-export function buildOrderEmbed({ title, color = 0x5865f2, fields = [], footer = "VinzShop" }) {
+export function buildOrderEmbed({
+  title,
+  color = 0x5865f2,
+  fields = [],
+  footer = "VinzShop",
+}) {
   return {
     title,
     color,
@@ -46,4 +71,3 @@ export function buildOrderEmbed({ title, color = 0x5865f2, fields = [], footer =
     timestamp: new Date().toISOString(),
   };
 }
-

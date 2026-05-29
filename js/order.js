@@ -8,8 +8,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import { buildOrderEmbed, sendDiscordWebhook } from "./webhook.js";
-
-const orderId = localStorage.getItem("orderId");
+import { initLiveChat, resetLiveChat } from "./chat.js";
 
 const paymentModal = document.getElementById("paymentModal");
 
@@ -17,7 +16,14 @@ const paymentContent = document.getElementById("paymentContent");
 
 const refreshBtn = document.getElementById("refreshBtn");
 
-let lastPaymentStatus = null;
+const IDLE_TIMEOUT_MS = 30 * 60 * 1000;
+const IDLE_CHECK_INTERVAL_MS = 60 * 1000;
+
+let orderUnsubscribe = null;
+let lastOrderData = null;
+let paymentModalShown = false;
+let idleCheckTimer = null;
+let idleListenersAttached = false;
 
 if (refreshBtn) {
   refreshBtn.addEventListener("click", () => {
@@ -25,50 +31,167 @@ if (refreshBtn) {
   });
 }
 
-if (orderId) {
-  const orderRef = doc(db, "orders", orderId);
+function touchActivity() {
+  if (localStorage.getItem("orderId")) {
+    localStorage.setItem("orderLastActive", String(Date.now()));
+  }
+}
 
-  onSnapshot(orderRef, async (snapshot) => {
+function stopIdleWatch() {
+  if (idleCheckTimer) {
+    clearInterval(idleCheckTimer);
+    idleCheckTimer = null;
+  }
+}
+
+function startIdleWatch() {
+  if (!localStorage.getItem("orderId")) return;
+
+  touchActivity();
+
+  if (!idleListenersAttached) {
+    ["mousemove", "keydown", "click", "touchstart", "scroll"].forEach(
+      (eventName) => {
+        document.addEventListener(eventName, touchActivity, { passive: true });
+      },
+    );
+    idleListenersAttached = true;
+  }
+
+  if (idleCheckTimer) return;
+
+  idleCheckTimer = setInterval(() => {
+    const orderId = localStorage.getItem("orderId");
+    if (!orderId) return;
+
+    const lastActive = Number(localStorage.getItem("orderLastActive") || 0);
+    if (lastActive && Date.now() - lastActive > IDLE_TIMEOUT_MS) {
+      resetCustomerSession({
+        redirectToIndex: true,
+      });
+    }
+  }, IDLE_CHECK_INTERVAL_MS);
+}
+
+function resetCustomerSession({ redirectToIndex = false, showMessage = "" } = {}) {
+  if (orderUnsubscribe) {
+    orderUnsubscribe();
+    orderUnsubscribe = null;
+  }
+
+  stopIdleWatch();
+  resetLiveChat();
+
+  localStorage.removeItem("orderId");
+  localStorage.removeItem("orderLastActive");
+
+  lastOrderData = null;
+  paymentModalShown = false;
+
+  if (paymentModal) paymentModal.classList.remove("active");
+  if (paymentContent) paymentContent.innerHTML = "";
+
+  const orderForm = document.getElementById("orderForm");
+  const method = document.getElementById("method");
+  const dynamicForm = document.getElementById("dynamicForm");
+  const statusBox = document.getElementById("statusBox");
+  const tutorialSelect = document.getElementById("tutorialSelect");
+  const tutorialVideo = document.getElementById("tutorialVideo");
+  const liveChatArea = document.getElementById("liveChatArea");
+
+  if (orderForm) orderForm.reset();
+  if (method) method.value = "";
+  if (dynamicForm) dynamicForm.innerHTML = "";
+  if (statusBox) {
+    statusBox.innerHTML = showMessage
+      ? `<div class="status-card">${showMessage}</div>`
+      : "";
+  }
+  if (tutorialSelect) tutorialSelect.value = "";
+  if (tutorialVideo) {
+    tutorialVideo.pause();
+    tutorialVideo.removeAttribute("src");
+    tutorialVideo.load();
+  }
+  if (liveChatArea) liveChatArea.innerHTML = "";
+
+  if (redirectToIndex) {
+    window.location.href = "index.html";
+  }
+}
+
+function checkIdleOnLoad() {
+  const orderId = localStorage.getItem("orderId");
+  if (!orderId) return false;
+
+  const lastActive = Number(localStorage.getItem("orderLastActive") || 0);
+  if (lastActive && Date.now() - lastActive > IDLE_TIMEOUT_MS) {
+    resetCustomerSession({ redirectToIndex: true });
+    return true;
+  }
+
+  return false;
+}
+
+function updateStatusBox(data) {
+  const statusBox = document.getElementById("statusBox");
+  if (!statusBox) return;
+
+  if (data.status === "pending") {
+    statusBox.innerHTML = `<div class="status-card">⏳ Menunggu admin dicek... Silakan tetap di halaman ini.</div>`;
+  } else if (data.status === "payment") {
+    statusBox.innerHTML = `
+      <div class="status-card">
+        💳 Admin sudah mengirim tagihan pembayaran.
+        <button type="button" class="btn-reopen-payment" onclick="reopenPaymentModal()">
+          💳 Pilih Metode Pembayaran
+        </button>
+      </div>`;
+  } else if (data.status === "payment_verified") {
+    statusBox.innerHTML = `<div class="status-card">✔️ Bukti pembayaran terkirim. Menunggu verifikasi admin...</div>`;
+  } else if (data.status === "completed") {
+    statusBox.innerHTML = `<div class="status-card">✅ Pesanan selesai. Anda dapat membuat order baru.</div>`;
+  }
+}
+
+function startOrderWatch(watchOrderId) {
+  if (!watchOrderId) return;
+
+  if (orderUnsubscribe) {
+    orderUnsubscribe();
+    orderUnsubscribe = null;
+  }
+
+  const orderRef = doc(db, "orders", watchOrderId);
+
+  orderUnsubscribe = onSnapshot(orderRef, async (snapshot) => {
     if (!snapshot.exists()) return;
 
     const data = snapshot.data();
+    lastOrderData = data;
 
-    // Open payment modal when status becomes 'payment'
-    if (data.status === "payment" && data.status !== lastPaymentStatus) {
-      lastPaymentStatus = data.status;
+    updateStatusBox(data);
 
+    if (data.status === "payment" && !paymentModalShown) {
+      paymentModalShown = true;
       openPaymentModal(data);
     }
 
-    // When admin marks as done and requests reset for customer, clear client state
+    if (data.status !== "payment") {
+      paymentModalShown = false;
+    }
+
     if (data.status === "completed" && data.resetForCustomer) {
       try {
-        // close modal and clear payment UI
-        if (paymentModal) paymentModal.classList.remove("active");
-        if (paymentContent) paymentContent.innerHTML = "";
-
-        const paymentSection = document.getElementById("paymentSection");
-        const paymentArea = document.getElementById("paymentArea");
-        const statusBox = document.getElementById("statusBox");
-        const liveChatArea = document.getElementById("liveChatArea");
-
-        if (paymentSection) paymentSection.innerHTML = "";
-        if (paymentArea) paymentArea.innerHTML = "";
-        if (liveChatArea) liveChatArea.innerHTML = "";
-        if (statusBox)
-          statusBox.innerHTML = `<div class="status-card">✅ Pesanan selesai. Anda dapat membuat order baru.</div>`;
-
-        // remove local orderId so customer can create a new order and chat resets
-        localStorage.removeItem("orderId");
-
-        // acknowledge reset on server to avoid repeated triggers
         await updateDoc(orderRef, {
           resetForCustomer: false,
           paymentOpened: false,
         });
 
-        // optional: reload so page scripts re-init without orderId
-        setTimeout(() => location.reload(), 800);
+        resetCustomerSession({
+          showMessage:
+            "✅ Pesanan selesai! Form sudah direset. Silakan buat order baru.",
+        });
       } catch (err) {
         console.error("Failed to reset client after completion:", err);
       }
@@ -76,7 +199,28 @@ if (orderId) {
   });
 }
 
+if (!checkIdleOnLoad()) {
+  const savedOrderId = localStorage.getItem("orderId");
+  if (savedOrderId) {
+    if (!localStorage.getItem("orderLastActive")) {
+      localStorage.setItem("orderLastActive", String(Date.now()));
+    }
+
+    startOrderWatch(savedOrderId);
+    initLiveChat(savedOrderId);
+    startIdleWatch();
+  }
+}
+
+window.reopenPaymentModal = () => {
+  if (lastOrderData?.status === "payment") {
+    openPaymentModal(lastOrderData);
+  }
+};
+
 function openPaymentModal(data) {
+  if (!paymentModal || !paymentContent) return;
+
   paymentModal.classList.add("active");
 
   paymentContent.innerHTML = `
@@ -289,9 +433,19 @@ window.validateAndSendProof = (paymentMethod) => {
 
   reader.onload = async (e) => {
     try {
+      const currentOrderId = localStorage.getItem("orderId");
+      if (!currentOrderId) {
+        showModalAlert(
+          "❌ Order Tidak Ditemukan",
+          "Sesi order tidak ditemukan. Silakan buat order baru.",
+          "error",
+        );
+        return;
+      }
+
       const base64File = e.target.result;
 
-      await updateDoc(doc(db, "orders", orderId), {
+      await updateDoc(doc(db, "orders", currentOrderId), {
         proofImage: base64File,
         proofFileName: file.name,
         paymentMethod: paymentMethod,
@@ -306,7 +460,7 @@ window.validateAndSendProof = (paymentMethod) => {
             title: "✅ Bukti pembayaran terkirim",
             color: 0x2ecc71,
             fields: [
-              { name: "Order ID", value: orderId, inline: false },
+              { name: "Order ID", value: currentOrderId, inline: false },
               { name: "Metode Bayar", value: paymentMethod, inline: true },
               { name: "Status", value: "payment_verified", inline: true },
             ],
@@ -378,11 +532,11 @@ window.showModalAlert = (title, message, type = "info") => {
 };
 
 window.closePaymentModal = () => {
-  paymentModal.classList.remove("active");
+  if (paymentModal) paymentModal.classList.remove("active");
 };
 
 window.addEventListener("click", (e) => {
-  if (e.target === paymentModal) {
+  if (e.target === paymentModal && paymentModal) {
     paymentModal.classList.remove("active");
   }
 });
@@ -417,6 +571,7 @@ window.addEventListener("click", (e) => {
         : `order_${Date.now()}_${Math.random().toString(16).slice(2)}`;
 
     localStorage.setItem("orderId", orderId);
+    localStorage.setItem("orderLastActive", String(Date.now()));
 
     const createdAt = new Date().toISOString();
     const total = 150000;
@@ -453,9 +608,16 @@ window.addEventListener("click", (e) => {
         ],
       });
 
-      // refresh user page to load payment modal wiring (if status changes)
-      alert("✅ Order berhasil dibuat. Silakan tunggu admin memproses.");
-      setTimeout(() => location.reload(), 400);
+      startOrderWatch(orderId);
+      initLiveChat(orderId);
+      startIdleWatch();
+
+      const statusBox = document.getElementById("statusBox");
+      if (statusBox) {
+        statusBox.innerHTML = `
+          <div class="status-card">⏳ Menunggu admin dicek... Silakan tetap di halaman ini.</div>
+        `;
+      }
     } catch (err) {
       console.error("Failed to create order:", err);
       alert("❌ Gagal membuat order");

@@ -8,6 +8,8 @@ import {
   addDoc,
   getDocs,
   deleteDoc,
+  query,
+  orderBy,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import { buildOrderEmbed, sendDiscordWebhook } from "./webhook.js";
@@ -59,13 +61,6 @@ onSnapshot(ordersRef, (snapshot) => {
       `
       : "";
 
-    const deleteButton =
-      !data.proofImage && data.status !== "completed"
-        ? `<button onclick="deleteOrder('${orderId}')" style="flex: 1; background: #dc3545; color: white; padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-left: 10px;">
-          🗑️ Hapus
-        </button>`
-        : "";
-
     ordersContainer.innerHTML += `
 
         <div class="admin-order ${data.status === "payment_verified" ? "verified" : ""}">
@@ -92,7 +87,12 @@ onSnapshot(ordersRef, (snapshot) => {
             >
               💳 Lanjut Pembayaran
             </button>
-            ${deleteButton}
+            <button
+              class="btn-delete"
+              onclick="deleteOrder('${orderId}')"
+            >
+              🗑️ Hapus
+            </button>
           </div>
 
           <div class="admin-chat-section">
@@ -237,6 +237,17 @@ window.deleteOrder = async (orderId) => {
 
   showAdminConfirm(confirmMsg, async () => {
     try {
+      const messagesRef = collection(db, "orders", orderId, "messages");
+      const messagesSnap = await getDocs(messagesRef);
+      await Promise.all(
+        messagesSnap.docs.map((messageDoc) => deleteDoc(messageDoc.ref)),
+      );
+
+      if (messageListeners.has(orderId)) {
+        messageListeners.get(orderId)();
+        messageListeners.delete(orderId);
+      }
+
       await deleteDoc(doc(db, "orders", orderId));
 
       showAdminAlert(
@@ -390,10 +401,15 @@ window.exportOrdersData = () => {
   );
 };
 
-async function loadMessages(orderId) {
-  const msgRef = collection(db, "orders", orderId, "messages");
+const messageListeners = new Map();
 
-  onSnapshot(msgRef, (snapshot) => {
+async function loadMessages(orderId) {
+  if (messageListeners.has(orderId)) return;
+
+  const msgRef = collection(db, "orders", orderId, "messages");
+  const q = query(msgRef, orderBy("createdAt", "asc"));
+
+  const unsub = onSnapshot(q, (snapshot) => {
     const chatBox = document.getElementById(`chat-${orderId}`);
 
     if (!chatBox) return;
@@ -419,7 +435,11 @@ async function loadMessages(orderId) {
 
           `;
     });
+
+    chatBox.scrollTop = chatBox.scrollHeight;
   });
+
+  messageListeners.set(orderId, unsub);
 }
 
 window.sendAdminChat = async (e, orderId) => {

@@ -129,8 +129,7 @@ select {
   margin-top: 12px;
 }
 
-.pricelist-btn{
-
+.pricelist-btn {
   display: block;
 
   width: 100%;
@@ -151,9 +150,7 @@ select {
 
   margin-bottom: 20px;
 
-  border:
-    2px solid #ffb7da;
-
+  border: 2px solid #ffb7da;
 }
 
 .status-card {
@@ -170,6 +167,24 @@ select {
   font-weight: bold;
 
   text-align: center;
+}
+
+.btn-reopen-payment {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: #ff4fa0;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-reopen-payment:hover {
+  opacity: 0.9;
 }
 
 .payment-box {
@@ -562,6 +577,41 @@ video {
 
 .btn-payment.active {
   background: #28a745;
+}
+
+.btn-delete {
+  flex: 1;
+  min-width: 150px;
+  background: #dc3545;
+  color: white;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s;
+  text-align: center;
+}
+
+.btn-delete:hover {
+  background: #bb2d3b;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+}
+
+.site-footer {
+  margin-top: 40px;
+  padding: 20px 16px;
+  text-align: center;
+  color: #ff4fa0;
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+.site-footer p {
+  margin: 0;
 }
 
 .admin-chat-section {
