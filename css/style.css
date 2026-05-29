@@ -5,15 +5,9 @@
 }
 
 body {
-
   font-family: Arial, sans-serif;
 
-  background:
-    linear-gradient(
-      135deg,
-      #ffd1e8,
-      #ffb7da
-    );
+  background: linear-gradient(135deg, #ffd1e8, #ffb7da);
 
   min-height: 100vh;
 
@@ -22,7 +16,6 @@ body {
 
 .container,
 .landing-box {
-
   width: 100%;
   max-width: 520px;
 
@@ -34,12 +27,10 @@ body {
 
   border-radius: 28px;
 
-  box-shadow:
-    0 10px 30px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 .landing-page {
-
   display: flex;
   justify-content: center;
   align-items: center;
@@ -48,17 +39,14 @@ body {
 }
 
 .logo {
-
   width: 90px;
 
   display: block;
 
-  margin:
-    0 auto 20px;
+  margin: 0 auto 20px;
 }
 
 h1 {
-
   text-align: center;
 
   color: #ff4fa0;
@@ -67,21 +55,18 @@ h1 {
 }
 
 h2 {
-
   color: #ff4fa0;
 
   margin-bottom: 15px;
 }
 
 p {
-
   color: gray;
 
   text-align: center;
 }
 
 .landing-buttons {
-
   display: flex;
   flex-direction: column;
 
@@ -92,7 +77,6 @@ p {
 
 .landing-btn,
 button {
-
   background: #ff4fa0;
 
   color: white;
@@ -113,7 +97,6 @@ button {
 }
 
 form {
-
   display: flex;
   flex-direction: column;
 
@@ -124,19 +107,16 @@ form {
 
 input,
 select {
-
   padding: 15px;
 
   border-radius: 14px;
 
-  border:
-    2px solid #ffd1e8;
+  border: 2px solid #ffd1e8;
 
   outline: none;
 }
 
 .price-item {
-
   display: flex;
   justify-content: space-between;
 
@@ -150,7 +130,6 @@ select {
 }
 
 .status-card {
-
   margin-top: 20px;
 
   background: #fff0f7;
@@ -167,7 +146,6 @@ select {
 }
 
 .payment-box {
-
   margin-top: 25px;
 
   background: #fff0f7;
@@ -175,10 +153,107 @@ select {
   padding: 20px;
 
   border-radius: 18px;
+
+  border: 2px solid #ffd1e8;
+
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.payment-box h3 {
+  color: #ff4fa0;
+  font-size: 20px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.payment-box img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.payment-box input[type="file"] {
+  width: 100%;
+  padding: 12px;
+  border: 2px dashed #ffd1e8;
+  border-radius: 10px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.payment-box input[type="file"]:hover {
+  border-color: #ff4fa0;
+  background: #fff9fc;
+}
+
+.payment-box button {
+  width: 100%;
+  background: #ff4fa0;
+  color: white;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 15px;
+}
+
+.payment-box button:hover {
+  background: #ff2a7e;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 79, 160, 0.3);
+}
+
+.payment-card {
+  background: white;
+
+  padding: 20px;
+
+  border-radius: 20px;
+
+  margin-top: 20px;
+
+  text-align: center;
+}
+
+.payment-card button {
+  margin-top: 10px;
+
+  width: 100%;
+}
+
+.payment-info {
+  margin-top: 20px;
+
+  background: #fff0f6;
+
+  padding: 15px;
+
+  border-radius: 15px;
+}
+
+#refreshBtn {
+  width: 100%;
+
+  margin-bottom: 15px;
 }
 
 .chat-container {
-
   margin-top: 30px;
 
   background: #fff0f7;
@@ -189,7 +264,6 @@ select {
 }
 
 #chatBox {
-
   height: 280px;
 
   overflow-y: auto;
@@ -204,7 +278,6 @@ select {
 }
 
 .chat-message {
-
   background: #ffd1e8;
 
   padding: 12px;
@@ -215,12 +288,10 @@ select {
 }
 
 .chat-message b {
-
   color: #ff4fa0;
 }
 
 .order-card {
-
   background: #fff0f7;
 
   padding: 20px;
@@ -231,13 +302,358 @@ select {
 }
 
 .order-card p {
-
   text-align: left;
 
   margin-top: 8px;
 }
 
 video {
-
   border-radius: 16px;
+}
+
+/* MODAL STYLING */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+}
+
+.modal.active {
+  display: flex !important;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 30px;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 450px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  position: relative;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.closeModal {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #ff4fa0;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.closeModal:hover {
+  transform: scale(1.2);
+}
+
+.payment-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.payment-buttons button {
+  background: #ff4fa0;
+  color: white;
+  padding: 15px;
+  border-radius: 14px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.3s;
+}
+
+.payment-buttons button:hover {
+  background: #ff2a7e;
+}
+
+.back-chat {
+  width: 100%;
+  background: white;
+  color: #ff4fa0;
+  border: 2px solid #ff4fa0;
+  text-align: center;
+}
+
+.back-chat:hover {
+  background: #fff0f7;
+}
+
+/* ADMIN PAGE STYLING */
+.admin-summary {
+  background: linear-gradient(135deg, #ff4fa0, #ff2a7e);
+  color: white;
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 25px;
+  text-align: center;
+  font-size: 18px;
+  box-shadow: 0 5px 15px rgba(255, 79, 160, 0.3);
+}
+
+.admin-summary strong {
+  font-size: 28px;
+  display: block;
+  margin-top: 10px;
+}
+
+.admin-order {
+  background: white;
+  border: 2px solid #ffd1e8;
+  padding: 20px;
+  border-radius: 18px;
+  margin-bottom: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.admin-order:hover {
+  box-shadow: 0 8px 25px rgba(255, 79, 160, 0.15);
+  border-color: #ff4fa0;
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #ffd1e8;
+}
+
+.order-header h3 {
+  color: #ff4fa0;
+  margin: 0;
+  font-size: 18px;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.status-badge.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-badge.payment {
+  background: #cfe2ff;
+  color: #084298;
+}
+
+.status-badge.completed {
+  background: #d1e7dd;
+  color: #0f5132;
+}
+
+.order-info {
+  background: #fff0f7;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+}
+
+.order-info p {
+  margin: 8px 0;
+  color: #333;
+  text-align: left;
+  font-size: 14px;
+}
+
+.order-info strong {
+  color: #ff4fa0;
+}
+
+.order-actions {
+  margin-bottom: 18px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #ffd1e8;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-payment {
+  flex: 1;
+  min-width: 150px;
+  background: #ff4fa0;
+  color: white;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s;
+  text-align: center;
+}
+
+.btn-payment:hover:not(:disabled) {
+  background: #ff2a7e;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 79, 160, 0.3);
+}
+
+.btn-payment:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.btn-payment:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.btn-payment.active {
+  background: #28a745;
+}
+
+.admin-chat-section {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 12px;
+}
+
+.admin-chat-section h4 {
+  color: #ff4fa0;
+  margin: 0 0 12px 0;
+  font-size: 16px;
+}
+
+.admin-chat {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 12px;
+  height: 200px;
+  overflow-y: auto;
+  margin-bottom: 12px;
+}
+
+.admin-chat::-webkit-scrollbar {
+  width: 6px;
+}
+
+.admin-chat::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.admin-chat::-webkit-scrollbar-thumb {
+  background: #ff4fa0;
+  border-radius: 10px;
+}
+
+.admin-chat::-webkit-scrollbar-thumb:hover {
+  background: #ff2a7e;
+}
+
+.msg {
+  background: #ffd1e8;
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.msg b {
+  color: #ff4fa0;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.msg p {
+  margin: 0;
+  color: #333;
+  text-align: left;
+}
+
+.chat-form {
+  display: flex;
+  gap: 8px;
+}
+
+.chat-form input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.chat-form button {
+  background: #ff4fa0;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 10px;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+  white-space: nowrap;
+}
+
+.chat-form button:hover {
+  background: #ff2a7e;
+}
+
+/* PROOF SECTION STYLING */
+.proof-section {
+  background: #d1e7dd;
+  padding: 18px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+  border-left: 4px solid #198754;
+}
+
+.proof-section h4 {
+  color: #0f5132;
+  margin: 0 0 12px 0;
+  font-size: 16px;
+}
+
+.proof-section img {
+  border: 2px solid #198754;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.admin-order.verified {
+  border-color: #28a745;
+  background: #f0fff4;
+}
+
+.status-badge.payment_verified {
+  background: #d1e7dd;
+  color: #0f5132;
+  border: 1px solid #198754;
 }

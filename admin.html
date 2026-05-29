@@ -5,20 +5,44 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Admin Panel</title>
+    <title>Admin Panel - VinzShop</title>
 
     <link rel="stylesheet" href="./css/style.css" />
+
+    <style>
+      body {
+        background: linear-gradient(135deg, #ffd1e8, #ffb7da);
+      }
+    </style>
   </head>
 
   <body>
     <div class="container">
-      <div id="ordersContainer">
-        <h1>📦 ADMIN PANEL</h1>
+      <div id="ordersContainer"></div>
+    </div>
 
-        <div id="orders"></div>
+    <div id="paymentModal" class="modal">
+      <div class="modal-content">
+        <span class="closeModal" onclick="closePaymentModal()"> ✖ </span>
+
+        <div id="paymentContent"></div>
       </div>
     </div>
 
     <script type="module" src="./js/admin.js"></script>
+
+    <script>
+      window.closePaymentModal = () => {
+        const modal = document.getElementById("paymentModal");
+        modal.classList.remove("active");
+      };
+
+      window.addEventListener("click", (e) => {
+        const modal = document.getElementById("paymentModal");
+        if (e.target === modal) {
+          modal.classList.remove("active");
+        }
+      });
+    </script>
   </body>
 </html>

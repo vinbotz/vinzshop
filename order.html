@@ -1,146 +1,97 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
-<head>
+  <head>
+    <meta charset="UTF-8" />
 
-  <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  />
+    <title>Order VinzShop</title>
 
-  <title>Order VinzShop</title>
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
 
-  <link
-    rel="stylesheet"
-    href="./css/style.css"
-  />
+  <body>
+    <div class="container">
+      <h1>💖 ORDER VINZSHOP</h1>
 
-</head>
+      <form id="orderForm">
+        <input
+          type="text"
+          id="username"
+          placeholder="Username Roblox"
+          required
+        />
 
-<body>
+        <input
+          type="text"
+          id="whatsapp"
+          placeholder="Nomor WhatsApp"
+          required
+        />
 
-<div class="container">
+        <input type="number" id="robux" placeholder="Jumlah Robux" required />
 
-  <h1>💖 ORDER VINZSHOP</h1>
+        <select id="method" required>
+          <option value="">Pilih Metode</option>
 
-  <form id="orderForm">
+          <option>Gamepass</option>
 
-    <input
-      type="text"
-      id="username"
-      placeholder="Username Roblox"
-      required
-    />
+          <option>VILOG</option>
+        </select>
 
-    <input
-      type="text"
-      id="whatsapp"
-      placeholder="Nomor WhatsApp"
-      required
-    />
+        <button type="submit">✨ Buat Order</button>
 
-    <input
-      type="number"
-      id="robux"
-      placeholder="Jumlah Robux"
-      required
-    />
+        <button id="refreshBtn">🔄 Refresh Halaman</button>
+      </form>
 
-    <select id="method" required>
+      <br />
 
-      <option value="">
-        Pilih Metode
-      </option>
+      <select id="tutorialSelect">
+        <option value="">📚 Pilih Tutorial</option>
 
-      <option>
-        Gamepass
-      </option>
+        <option value="gamepass">Tutorial Gamepass</option>
 
-      <option>
-        VILOG
-      </option>
+        <option value="vilog">Tutorial VILOG</option>
 
-    </select>
+        <option value="tng">Cara Pembayaran TNG</option>
+      </select>
 
-    <button type="submit">
-      ✨ Buat Order
-    </button>
+      <video
+        id="tutorialVideo"
+        controls
+        width="100%"
+        style="margin-top: 20px; border-radius: 16px"
+      ></video>
 
-  </form>
+      <div id="statusBox"></div>
 
-  <br>
+      <div id="paymentModal" class="modal">
+        <div class="modal-content">
+          <span class="closeModal" onclick="closePaymentModal()"> ✖ </span>
 
-  <select id="tutorialSelect">
+          <div id="paymentContent"></div>
+        </div>
+      </div>
 
-    <option value="">
-      📚 Pilih Tutorial
-    </option>
+      <div id="liveChatArea"></div>
 
-    <option value="gamepass">
-      Tutorial Gamepass
-    </option>
+      <div class="chat-container">
+        <h2>💬 LIVE CHAT</h2>
 
-    <option value="vilog">
-      Tutorial VILOG
-    </option>
+        <div id="chatBox"></div>
 
-    <option value="tng">
-      Cara Pembayaran TNG
-    </option>
+        <form id="chatForm">
+          <input type="text" id="chatInput" placeholder="Ketik pesan..." />
 
-  </select>
+          <button type="submit">Kirim</button>
+        </form>
+      </div>
+    </div>
 
-  <video
-    id="tutorialVideo"
-    controls
-    width="100%"
-    style="margin-top:20px;border-radius:16px;"
-  ></video>
+    <script type="module" src="./js/order.js"></script>
 
-  <div id="statusBox"></div>
+    <script type="module" src="./js/chat.js"></script>
 
-  <div id="paymentSection"></div>
-
-  <div class="chat-container">
-
-    <h2>💬 LIVE CHAT</h2>
-
-    <div id="chatBox"></div>
-
-    <form id="chatForm">
-
-      <input
-        type="text"
-        id="chatInput"
-        placeholder="Ketik pesan..."
-      />
-
-      <button type="submit">
-        Kirim
-      </button>
-
-    </form>
-
-  </div>
-
-</div>
-
-<script
-  type="module"
-  src="./js/order.js"
-></script>
-
-<script
-  type="module"
-  src="./js/chat.js"
-></script>
-
-<script
-  type="module"
-  src="./js/payment.js"
-></script>
-
-</body>
+    <script type="module" src="./js/payment.js"></script>
+  </body>
 </html>
-```
