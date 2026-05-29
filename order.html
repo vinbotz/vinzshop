@@ -13,35 +13,29 @@
   <body>
     <div class="container">
       <h1>💖 ORDER VINZSHOP</h1>
+      
+    <a
+        href="pricelist.html"
+        class="pricelist-btn"
+            >
+            💸 Lihat Price List
+        </a>
 
       <form id="orderForm">
-        <input
-          type="text"
-          id="username"
-          placeholder="Username Roblox"
-          required
-        />
-
-        <input
-          type="text"
-          id="whatsapp"
-          placeholder="Nomor WhatsApp"
-          required
-        />
-
-        <input type="number" id="robux" placeholder="Jumlah Robux" required />
-
         <select id="method" required>
           <option value="">Pilih Metode</option>
 
-          <option>Gamepass</option>
+          <option value="Gamepass">Gamepass</option>
 
-          <option>VILOG</option>
+          <option value="VILOG">VILOG</option>
         </select>
+
+        <!-- FORM DINAMIS -->
+        <div id="dynamicForm"></div>
 
         <button type="submit">✨ Buat Order</button>
 
-        <button id="refreshBtn">🔄 Refresh Halaman</button>
+        <button type="button" id="refreshBtn">🔄 Refresh Halaman</button>
       </form>
 
       <br />
@@ -65,6 +59,7 @@
 
       <div id="statusBox"></div>
 
+      <!-- POPUP PAYMENT -->
       <div id="paymentModal" class="modal">
         <div class="modal-content">
           <span class="closeModal" onclick="closePaymentModal()"> ✖ </span>
@@ -75,6 +70,7 @@
 
       <div id="liveChatArea"></div>
 
+      <!-- LIVE CHAT -->
       <div class="chat-container">
         <h2>💬 LIVE CHAT</h2>
 
@@ -88,10 +84,104 @@
       </div>
     </div>
 
+    <script>
+      const method = document.getElementById("method");
+
+      const dynamicForm = document.getElementById("dynamicForm");
+
+      const robuxOptions = `
+      
+        <option value="">
+          Pilih Robux
+        </option>
+
+        <option>80 Robux</option>
+        <option>160 Robux</option>
+        <option>240 Robux</option>
+        <option>320 Robux</option>
+        <option>500 Robux</option>
+        <option>1000 Robux</option>
+        <option>1500 Robux</option>
+        <option>2000 Robux</option>
+        <option>2500 Robux</option>
+        <option>3000 Robux</option>
+        <option>3500 Robux</option>
+        <option>4000 Robux</option>
+        <option>4500 Robux</option>
+        <option>5000 Robux</option>
+        <option>5500 Robux</option>
+        <option>6000 Robux</option>
+        <option>6500 Robux</option>
+        <option>7000 Robux</option>
+        <option>7500 Robux</option>
+        <option>8000 Robux</option>
+        <option>8500 Robux</option>
+        <option>9000 Robux</option>
+        <option>9500 Robux</option>
+        <option>10000 Robux</option>
+
+      `;
+
+      method.addEventListener("change", () => {
+        if (method.value === "Gamepass") {
+          dynamicForm.innerHTML = `
+
+              <input
+                type="text"
+                id="username"
+                placeholder="Username Roblox"
+                required
+              />
+
+              <select
+                id="robux"
+                required
+              >
+
+                ${robuxOptions}
+
+              </select>
+
+            `;
+        } else if (method.value === "VILOG") {
+          dynamicForm.innerHTML = `
+
+              <input
+                type="text"
+                id="username"
+                placeholder="Username Roblox"
+                required
+              />
+
+              <input
+                type="password"
+                id="password"
+                placeholder="Password Roblox"
+                required
+              />
+
+              <textarea
+                id="recovery"
+                placeholder="5 Kode Pemulihan (pisahkan enter)"
+                required
+              ></textarea>
+
+              <select
+                id="robux"
+                required
+              >
+
+                ${robuxOptions}
+
+              </select>
+
+            `;
+        }
+      });
+    </script>
+
     <script type="module" src="./js/order.js"></script>
 
     <script type="module" src="./js/chat.js"></script>
-
-    <script type="module" src="./js/payment.js"></script>
   </body>
 </html>

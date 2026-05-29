@@ -25,15 +25,50 @@ if (refreshBtn) {
 if (orderId) {
   const orderRef = doc(db, "orders", orderId);
 
-  onSnapshot(orderRef, (snapshot) => {
+  onSnapshot(orderRef, async (snapshot) => {
     if (!snapshot.exists()) return;
 
     const data = snapshot.data();
 
+    // Open payment modal when status becomes 'payment'
     if (data.status === "payment" && data.status !== lastPaymentStatus) {
       lastPaymentStatus = data.status;
 
       openPaymentModal(data);
+    }
+
+    // When admin marks as done and requests reset for customer, clear client state
+    if (data.status === "completed" && data.resetForCustomer) {
+      try {
+        // close modal and clear payment UI
+        if (paymentModal) paymentModal.classList.remove("active");
+        if (paymentContent) paymentContent.innerHTML = "";
+
+        const paymentSection = document.getElementById("paymentSection");
+        const paymentArea = document.getElementById("paymentArea");
+        const statusBox = document.getElementById("statusBox");
+        const liveChatArea = document.getElementById("liveChatArea");
+
+        if (paymentSection) paymentSection.innerHTML = "";
+        if (paymentArea) paymentArea.innerHTML = "";
+        if (liveChatArea) liveChatArea.innerHTML = "";
+        if (statusBox)
+          statusBox.innerHTML = `<div class="status-card">✅ Pesanan selesai. Anda dapat membuat order baru.</div>`;
+
+        // remove local orderId so customer can create a new order and chat resets
+        localStorage.removeItem("orderId");
+
+        // acknowledge reset on server to avoid repeated triggers
+        await updateDoc(orderRef, {
+          resetForCustomer: false,
+          paymentOpened: false,
+        });
+
+        // optional: reload so page scripts re-init without orderId
+        setTimeout(() => location.reload(), 800);
+      } catch (err) {
+        console.error("Failed to reset client after completion:", err);
+      }
     }
   });
 }
@@ -161,7 +196,7 @@ window.selectPayment = (payment) => {
       >
 
       <p style="text-align: center; color: #666; margin-bottom: 15px;">
-        Scan QR Code atau gunakan nomor rekening di atas
+        Scan QR Code atau gunakan nomor telepon di atas
       </p>
 
       <input

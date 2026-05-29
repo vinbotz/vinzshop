@@ -196,11 +196,14 @@ window.markAsDone = async (orderId) => {
     await updateDoc(doc(db, "orders", orderId), {
       status: "completed",
       completedAt: new Date().toISOString(),
+      // signal customer client to reset UI and allow new order
+      resetForCustomer: true,
+      paymentOpened: false,
     });
 
     showAdminAlert(
       "✅ Order Selesai",
-      `Order #${orderId}\nberhasil ditandai sebagai selesai!`,
+      `Order #${orderId}\nberhasil ditandai sebagai selesai dan klien akan direset.`,
       "success",
     );
   } catch (error) {
@@ -237,6 +240,10 @@ window.deleteOrder = async (orderId) => {
 };
 
 window.showAdminAlert = (title, message, type = "info") => {
+  // Modal-based alert (reuses #paymentModal and #paymentContent in admin.html)
+  const paymentModal = document.getElementById("paymentModal");
+  const paymentContent = document.getElementById("paymentContent");
+
   let icon = "ℹ️";
   let bgColor = "#cfe2ff";
   let textColor = "#084298";
@@ -259,13 +266,66 @@ window.showAdminAlert = (title, message, type = "info") => {
     buttonBg = "#198754";
   }
 
-  alert(`${icon} ${title}\n\n${message}`);
+  const alertHTML = `
+    <div class="modal-alert" style="background: ${bgColor}; border-left: 4px solid ${buttonBg}; padding: 20px; border-radius: 12px;">
+      <h3 style="color: ${textColor}; margin: 0 0 10px 0; font-size: 18px;">${icon} ${title}</h3>
+      <p style="color: ${textColor}; margin: 0 0 15px 0; line-height: 1.6; white-space: pre-line;">${message}</p>
+      <div style="text-align: right;"><button id="adminModalOk" style="background: ${buttonBg}; color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold;">👍 Mengerti</button></div>
+    </div>
+  `;
+
+  if (!paymentModal || !paymentContent) {
+    // Fallback to native alert if modal not present
+    alert(`${icon} ${title}\n\n${message}`);
+    return;
+  }
+
+  paymentContent.innerHTML = alertHTML;
+  paymentModal.classList.add("active");
+
+  const ok = document.getElementById("adminModalOk");
+  if (ok) {
+    ok.addEventListener("click", () => {
+      paymentModal.classList.remove("active");
+    });
+  }
 };
 
 window.showAdminConfirm = (message, onConfirm) => {
-  if (window.confirm(message)) {
-    onConfirm();
+  const paymentModal = document.getElementById("paymentModal");
+  const paymentContent = document.getElementById("paymentContent");
+
+  const confirmHTML = `
+    <div style="padding:20px;">
+      <h3 style="color:#842029; margin:0 0 10px 0;">⚠️ Konfirmasi</h3>
+      <p style="color:#842029; white-space: pre-line;">${message}</p>
+      <div style="display:flex; gap:10px; margin-top:16px;">
+        <button id="adminConfirmCancel" style="flex:1; background:#6c757d; color:white; border:none; padding:10px; border-radius:8px; cursor:pointer;">Batal</button>
+        <button id="adminConfirmOk" style="flex:1; background:#dc3545; color:white; border:none; padding:10px; border-radius:8px; cursor:pointer;">Hapus</button>
+      </div>
+    </div>
+  `;
+
+  if (!paymentModal || !paymentContent) {
+    if (window.confirm(message)) onConfirm();
+    return;
   }
+
+  paymentContent.innerHTML = confirmHTML;
+  paymentModal.classList.add("active");
+
+  const cancelBtn = document.getElementById("adminConfirmCancel");
+  const okBtn = document.getElementById("adminConfirmOk");
+
+  if (cancelBtn)
+    cancelBtn.addEventListener("click", () =>
+      paymentModal.classList.remove("active"),
+    );
+  if (okBtn)
+    okBtn.addEventListener("click", () => {
+      paymentModal.classList.remove("active");
+      onConfirm();
+    });
 };
 
 window.exportOrdersData = () => {
