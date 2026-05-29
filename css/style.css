@@ -1,0 +1,243 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+
+  font-family: Arial, sans-serif;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffd1e8,
+      #ffb7da
+    );
+
+  min-height: 100vh;
+
+  padding: 20px;
+}
+
+.container,
+.landing-box {
+
+  width: 100%;
+  max-width: 520px;
+
+  margin: auto;
+
+  background: white;
+
+  padding: 30px;
+
+  border-radius: 28px;
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.1);
+}
+
+.landing-page {
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  min-height: 100vh;
+}
+
+.logo {
+
+  width: 90px;
+
+  display: block;
+
+  margin:
+    0 auto 20px;
+}
+
+h1 {
+
+  text-align: center;
+
+  color: #ff4fa0;
+
+  margin-bottom: 10px;
+}
+
+h2 {
+
+  color: #ff4fa0;
+
+  margin-bottom: 15px;
+}
+
+p {
+
+  color: gray;
+
+  text-align: center;
+}
+
+.landing-buttons {
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 15px;
+
+  margin-top: 30px;
+}
+
+.landing-btn,
+button {
+
+  background: #ff4fa0;
+
+  color: white;
+
+  text-decoration: none;
+
+  padding: 15px;
+
+  border-radius: 16px;
+
+  border: none;
+
+  font-weight: bold;
+
+  cursor: pointer;
+
+  text-align: center;
+}
+
+form {
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 15px;
+
+  margin-top: 20px;
+}
+
+input,
+select {
+
+  padding: 15px;
+
+  border-radius: 14px;
+
+  border:
+    2px solid #ffd1e8;
+
+  outline: none;
+}
+
+.price-item {
+
+  display: flex;
+  justify-content: space-between;
+
+  background: #fff0f7;
+
+  padding: 15px;
+
+  border-radius: 14px;
+
+  margin-top: 12px;
+}
+
+.status-card {
+
+  margin-top: 20px;
+
+  background: #fff0f7;
+
+  padding: 18px;
+
+  border-radius: 16px;
+
+  color: #ff4fa0;
+
+  font-weight: bold;
+
+  text-align: center;
+}
+
+.payment-box {
+
+  margin-top: 25px;
+
+  background: #fff0f7;
+
+  padding: 20px;
+
+  border-radius: 18px;
+}
+
+.chat-container {
+
+  margin-top: 30px;
+
+  background: #fff0f7;
+
+  padding: 20px;
+
+  border-radius: 18px;
+}
+
+#chatBox {
+
+  height: 280px;
+
+  overflow-y: auto;
+
+  background: white;
+
+  border-radius: 14px;
+
+  padding: 15px;
+
+  margin-bottom: 15px;
+}
+
+.chat-message {
+
+  background: #ffd1e8;
+
+  padding: 12px;
+
+  border-radius: 14px;
+
+  margin-top: 10px;
+}
+
+.chat-message b {
+
+  color: #ff4fa0;
+}
+
+.order-card {
+
+  background: #fff0f7;
+
+  padding: 20px;
+
+  border-radius: 18px;
+
+  margin-top: 20px;
+}
+
+.order-card p {
+
+  text-align: left;
+
+  margin-top: 8px;
+}
+
+video {
+
+  border-radius: 16px;
+}

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <title>Order VinzShop</title>
+
+  <link
+    rel="stylesheet"
+    href="./css/style.css"
+  />
+
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>💖 ORDER VINZSHOP</h1>
+
+  <form id="orderForm">
+
+    <input
+      type="text"
+      id="username"
+      placeholder="Username Roblox"
+      required
+    />
+
+    <input
+      type="text"
+      id="whatsapp"
+      placeholder="Nomor WhatsApp"
+      required
+    />
+
+    <input
+      type="number"
+      id="robux"
+      placeholder="Jumlah Robux"
+      required
+    />
+
+    <select id="method" required>
+
+      <option value="">
+        Pilih Metode
+      </option>
+
+      <option>
+        Gamepass
+      </option>
+
+      <option>
+        VILOG
+      </option>
+
+    </select>
+
+    <button type="submit">
+      ✨ Buat Order
+    </button>
+
+  </form>
+
+  <br>
+
+  <select id="tutorialSelect">
+
+    <option value="">
+      📚 Pilih Tutorial
+    </option>
+
+    <option value="gamepass">
+      Tutorial Gamepass
+    </option>
+
+    <option value="vilog">
+      Tutorial VILOG
+    </option>
+
+    <option value="tng">
+      Cara Pembayaran TNG
+    </option>
+
+  </select>
+
+  <video
+    id="tutorialVideo"
+    controls
+    width="100%"
+    style="margin-top:20px;border-radius:16px;"
+  ></video>
+
+  <div id="statusBox"></div>
+
+  <div id="paymentSection"></div>
+
+  <div class="chat-container">
+
+    <h2>💬 LIVE CHAT</h2>
+
+    <div id="chatBox"></div>
+
+    <form id="chatForm">
+
+      <input
+        type="text"
+        id="chatInput"
+        placeholder="Ketik pesan..."
+      />
+
+      <button type="submit">
+        Kirim
+      </button>
+
+    </form>
+
+  </div>
+
+</div>
+
+<script
+  type="module"
+  src="./js/order.js"
+></script>
+
+<script
+  type="module"
+  src="./js/chat.js"
+></script>
+
+<script
+  type="module"
+  src="./js/payment.js"
+></script>
+
+</body>
+</html>
+```
