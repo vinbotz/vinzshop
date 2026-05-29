@@ -54,7 +54,7 @@
         id="tutorialVideo"
         controls
         width="100%"
-        style="margin-top: 20px; border-radius: 16px"
+        style="margin-top: 20px; border-radius: 16px; display: none"
       ></video>
 
       <div id="statusBox"></div>
@@ -182,6 +182,34 @@
             `;
         }
       });
+
+      const tutorialSelect = document.getElementById("tutorialSelect");
+      const tutorialVideo = document.getElementById("tutorialVideo");
+
+      const tutorialVideos = {
+        gamepass: "./videos/tutorial-gamepass.mp4",
+        vilog: "./videos/tutorial-vilog.mp4",
+        tng: "./videos/tutorial-tng.mp4",
+      };
+
+      if (tutorialSelect && tutorialVideo) {
+        tutorialSelect.addEventListener("change", () => {
+          const selected = tutorialSelect.value;
+
+          if (!selected || !tutorialVideos[selected]) {
+            tutorialVideo.pause();
+            tutorialVideo.removeAttribute("src");
+            tutorialVideo.load();
+            tutorialVideo.style.display = "none";
+            return;
+          }
+
+          tutorialVideo.src = tutorialVideos[selected];
+          tutorialVideo.style.display = "block";
+          tutorialVideo.load();
+          tutorialVideo.play().catch(() => {});
+        });
+      }
     </script>
 
     <script type="module" src="./js/order.js"></script>

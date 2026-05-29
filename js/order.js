@@ -112,6 +112,7 @@ function resetCustomerSession({ redirectToIndex = false, showMessage = "" } = {}
     tutorialVideo.pause();
     tutorialVideo.removeAttribute("src");
     tutorialVideo.load();
+    tutorialVideo.style.display = "none";
   }
   if (liveChatArea) liveChatArea.innerHTML = "";
 
