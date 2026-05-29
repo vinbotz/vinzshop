@@ -10,6 +10,8 @@ import {
   deleteDoc,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+import { buildOrderEmbed, sendDiscordWebhook } from "./webhook.js";
+
 const ordersContainer = document.getElementById("ordersContainer");
 
 const ordersRef = collection(db, "orders");
@@ -199,6 +201,20 @@ window.markAsDone = async (orderId) => {
       // signal customer client to reset UI and allow new order
       resetForCustomer: true,
       paymentOpened: false,
+    });
+
+    await sendDiscordWebhook({
+      embeds: [
+        buildOrderEmbed({
+          title: "✅ Order selesai (Done)",
+          color: 0x2ecc71,
+          fields: [
+            { name: "Order ID", value: orderId, inline: false },
+            { name: "Status", value: "completed", inline: true },
+          ],
+          footer: "VinzShop",
+        }),
+      ],
     });
 
     showAdminAlert(

@@ -4,7 +4,10 @@ import {
   doc,
   onSnapshot,
   updateDoc,
+  setDoc,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import { buildOrderEmbed, sendDiscordWebhook } from "./webhook.js";
 
 const orderId = localStorage.getItem("orderId");
 
@@ -296,6 +299,22 @@ window.validateAndSendProof = (paymentMethod) => {
         status: "payment_verified",
       });
 
+      // Discord notify
+      await sendDiscordWebhook({
+        embeds: [
+          buildOrderEmbed({
+            title: "✅ Bukti pembayaran terkirim",
+            color: 0x2ecc71,
+            fields: [
+              { name: "Order ID", value: orderId, inline: false },
+              { name: "Metode Bayar", value: paymentMethod, inline: true },
+              { name: "Status", value: "payment_verified", inline: true },
+            ],
+            footer: "VinzShop",
+          }),
+        ],
+      });
+
       showModalAlert(
         "✅ Bukti Transfer Dikirim",
         `Bukti transfer ${paymentMethod} Anda telah dikirim!\n\nAdmin akan segera memverifikasi pembayaran Anda.\nTerima kasih!`,
@@ -367,3 +386,79 @@ window.addEventListener("click", (e) => {
     paymentModal.classList.remove("active");
   }
 });
+
+// Replace the above submit logic with deterministic doc id using setDoc
+// (keeps admin panel + orderId consistent)
+
+(function patchOrderSubmitDeterministic() {
+  const orderForm = document.getElementById("orderForm");
+  if (!orderForm) return;
+
+  orderForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const method = document.getElementById("method").value;
+    const username = document.getElementById("username")?.value?.trim() || "";
+
+    const robuxEl = document.getElementById("robux");
+    const robuxRaw = robuxEl?.value || robuxEl?.innerText || "";
+    const robux = Number(String(robuxRaw).replace(/[^0-9]/g, ""));
+
+    const password = document.getElementById("password")?.value?.trim() || "";
+    const recovery = document.getElementById("recovery")?.value?.trim() || "";
+
+    if (!username) return alert("Username wajib diisi");
+    if (!robux || Number.isNaN(robux))
+      return alert("Jumlah robux wajib dipilih");
+
+    const orderId =
+      crypto && crypto.randomUUID && crypto.randomUUID()
+        ? crypto.randomUUID()
+        : `order_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+
+    localStorage.setItem("orderId", orderId);
+
+    const createdAt = new Date().toISOString();
+    const total = 150000;
+
+    const orderDocData = {
+      username,
+      method,
+      robux,
+      whatsapp: "-",
+      status: "pending",
+      createdAt,
+      total,
+      paymentOpened: false,
+      resetForCustomer: false,
+      // VILOG
+      ...(method === "VILOG" ? { password, recovery } : {}),
+    };
+
+    try {
+      await setDoc(doc(db, "orders", orderId), orderDocData, { merge: false });
+
+      await sendDiscordWebhook({
+        embeds: [
+          buildOrderEmbed({
+            title: "🆕 Order dibuat",
+            color: 0x00c2ff,
+            fields: [
+              { name: "Order ID", value: orderId, inline: false },
+              { name: "Username", value: username, inline: true },
+              { name: "Metode", value: method, inline: true },
+              { name: "Robux", value: String(robux), inline: true },
+            ],
+          }),
+        ],
+      });
+
+      // refresh user page to load payment modal wiring (if status changes)
+      alert("✅ Order berhasil dibuat. Silakan tunggu admin memproses.");
+      setTimeout(() => location.reload(), 400);
+    } catch (err) {
+      console.error("Failed to create order:", err);
+      alert("❌ Gagal membuat order");
+    }
+  });
+})();
