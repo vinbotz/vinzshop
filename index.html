@@ -11,24 +11,43 @@
   </head>
 
   <body>
-    <div class="landing-page">
-      <div class="landing-box">
-        <img src="./assets/logo.png" class="logo" />
+    <main class="home-page">
+      <section class="landing-page">
+        <div class="landing-box">
+          <img src="./assets/logo.png" class="logo" alt="VinzShop Logo" />
 
-        <h1>💖 VinzShop</h1>
+          <h1>💖 VinzShop</h1>
 
-        <p>Fast • Trusted • Cheap</p>
+          <p>Fast • Trusted • Cheap</p>
 
-        <div class="landing-buttons">
-          <a href="pricelist.html" class="landing-btn"> 💸 PRICE LIST </a>
+          <div class="landing-buttons">
+            <a href="pricelist.html" class="landing-btn"> 💸 PRICE LIST </a>
 
-          <a href="order.html" class="landing-btn"> ✨ ORDER SEKARANG </a>
+            <a href="order.html" class="landing-btn"> ✨ ORDER SEKARANG </a>
+          </div>
         </div>
-      </div>
-    </div>
+      </section>
+
+      <section class="testimonials-section">
+        <div class="testimonials-container">
+          <h2>⭐ Testimoni Customer</h2>
+          <p class="testimonials-subtitle">
+            Bukti transaksi real dari channel #testi-done
+          </p>
+
+          <p id="testimonialsStatus" class="testimonials-status loading">
+            Memuat testimoni...
+          </p>
+
+          <div id="testimonialsGrid" class="testimonials-grid"></div>
+        </div>
+      </section>
+    </main>
 
     <footer class="site-footer">
       <p>© 2026 VinzShop. All rights reserved.</p>
     </footer>
+
+    <script type="module" src="./js/testimonials.js"></script>
   </body>
 </html>
