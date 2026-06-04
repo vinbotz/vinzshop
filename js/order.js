@@ -74,7 +74,21 @@ function startIdleWatch() {
   }, IDLE_CHECK_INTERVAL_MS);
 }
 
-function resetCustomerSession({ redirectToIndex = false, showMessage = "" } = {}) {
+const ACTIVE_ORDER_STATUSES = ["pending", "payment", "payment_verified"];
+
+function setOrderFormVisible(visible) {
+  const orderForm = document.getElementById("orderForm");
+  if (orderForm) orderForm.style.display = visible ? "" : "none";
+}
+
+function shouldHideOrderForm(status) {
+  return ACTIVE_ORDER_STATUSES.includes(status);
+}
+
+function resetCustomerSession({
+  redirectToIndex = false,
+  showMessage = "",
+} = {}) {
   if (orderUnsubscribe) {
     orderUnsubscribe();
     orderUnsubscribe = null;
@@ -102,7 +116,8 @@ function resetCustomerSession({ redirectToIndex = false, showMessage = "" } = {}
   const liveChatArea = document.getElementById("liveChatArea");
 
   if (orderForm) orderForm.reset();
-  if (method) method.value = "";
+  setOrderFormVisible(true);
+  if (methodSelect) methodSelect.value = "";
   if (dynamicForm) dynamicForm.innerHTML = "";
   if (statusBox) {
     statusBox.innerHTML = showMessage
@@ -140,6 +155,8 @@ function updateStatusBox(data) {
   const statusBox = document.getElementById("statusBox");
   if (!statusBox) return;
 
+  setOrderFormVisible(!shouldHideOrderForm(data.status));
+
   if (data.status === "pending") {
     statusBox.innerHTML = `<div class="status-card">⏳ Menunggu admin dicek... Silakan tetap di halaman ini.</div>`;
   } else if (data.status === "payment") {
@@ -151,6 +168,7 @@ function updateStatusBox(data) {
         </button>
       </div>`;
   } else if (data.status === "payment_verified") {
+    if (paymentModal) paymentModal.classList.remove("active");
     statusBox.innerHTML = `<div class="status-card">✔️ Bukti pembayaran terkirim. Menunggu verifikasi admin...</div>`;
   } else if (data.status === "completed") {
     statusBox.innerHTML = `<div class="status-card">✅ Pesanan selesai. Anda dapat membuat order baru.</div>`;
@@ -191,10 +209,7 @@ function startOrderWatch(watchOrderId) {
           paymentOpened: false,
         });
 
-        resetCustomerSession({
-          showMessage:
-            "✅ Pesanan selesai! Form sudah direset. Silakan buat order baru.",
-        });
+        resetCustomerSession({ redirectToIndex: true });
       } catch (err) {
         console.error("Failed to reset client after completion:", err);
       }
@@ -604,7 +619,6 @@ window.addEventListener("click", (e) => {
       region,
       method,
       robux,
-      whatsapp: "-",
       status: "pending",
       createdAt,
       total,
@@ -642,12 +656,7 @@ window.addEventListener("click", (e) => {
       initLiveChat(orderId);
       startIdleWatch();
 
-      const statusBox = document.getElementById("statusBox");
-      if (statusBox) {
-        statusBox.innerHTML = `
-          <div class="status-card">⏳ Menunggu admin dicek... Silakan tetap di halaman ini.</div>
-        `;
-      }
+      updateStatusBox({ status: "pending" });
     } catch (err) {
       console.error("Failed to create order:", err);
       alert("❌ Gagal membuat order");

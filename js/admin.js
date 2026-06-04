@@ -77,7 +77,6 @@ onSnapshot(ordersRef, (snapshot) => {
             <p><strong>💰 Robux:</strong> ${data.robux}</p>
             <p><strong>💳 Metode:</strong> ${data.method}</p>
             <p><strong>💵 Total:</strong> ${formatTotal(data.region || "indo", data.total || 0)}</p>
-            <p><strong>📱 WhatsApp:</strong> ${data.whatsapp}</p>
             ${data.paymentMethod ? `<p><strong>💸 Metode Bayar:</strong> ${data.paymentMethod}</p>` : ""}
           </div>
 
@@ -380,7 +379,6 @@ window.exportOrdersData = () => {
       metodeAwal: order.method,
       metodePeralihan: order.paymentMethod || "-",
       totalBayar: order.total,
-      whatsapp: order.whatsapp,
       status: order.status,
       tanggalPesan: order.createdAt || "-",
     })),
