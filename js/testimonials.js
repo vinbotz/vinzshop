@@ -1,7 +1,4 @@
-import {
-  TESTIMONIALS_LIMIT,
-  buildTestimonialsUrl,
-} from "./testimonials-config.js";
+import { buildTestimonialsUrl } from "./testimonials-config.js";
 
 const grid = document.getElementById("testimonialsGrid");
 const statusEl = document.getElementById("testimonialsStatus");
@@ -98,10 +95,10 @@ function normalizeTestimonials(rawList) {
   return merged.filter((item) => item.content || item.image);
 }
 
-function getLatestTestimonials(rawList, limit) {
-  return normalizeTestimonials(rawList)
-    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-    .slice(0, limit);
+function getTestimonials(rawList) {
+  return normalizeTestimonials(rawList).sort(
+    (a, b) => new Date(b.timestamp) - new Date(a.timestamp),
+  );
 }
 
 function renderTestimonialCard(item) {
@@ -223,7 +220,7 @@ async function loadTestimonials() {
 
     const data = await response.json();
     const rawList = Array.isArray(data) ? data : data.testimonials || [];
-    const items = getLatestTestimonials(rawList, TESTIMONIALS_LIMIT);
+    const items = getTestimonials(rawList);
 
     if (!items.length) {
       grid.innerHTML = "";
@@ -237,10 +234,7 @@ async function loadTestimonials() {
   } catch (error) {
     console.error("Gagal memuat testimoni:", error);
     grid.innerHTML = "";
-    setStatus(
-      "Testimoni belum bisa dimuat. Pastikan API bot berjalan di localhost:3000.",
-      "error",
-    );
+    setStatus("Testimoni belum bisa dimuat.", "error");
   }
 }
 
