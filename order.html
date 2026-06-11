@@ -13,13 +13,8 @@
   <body>
     <div class="container">
       <h1>💖 ORDER VINZSHOP</h1>
-      
-    <a
-        href="pricelist.html"
-        class="pricelist-btn"
-            >
-            💸 Lihat Price List
-        </a>
+
+      <a href="pricelist.html" class="pricelist-btn"> 💸 Lihat Price List </a>
 
       <form id="orderForm">
         <select id="region" required>
@@ -73,13 +68,15 @@
       <div id="liveChatArea"></div>
 
       <!-- LIVE CHAT -->
-      <div class="chat-container">
+      <div class="chat-container" style="display: none">
         <h2>💬 LIVE CHAT</h2>
 
         <div id="chatBox"></div>
 
         <form id="chatForm">
           <input type="text" id="chatInput" placeholder="Ketik pesan..." />
+
+          <input type="file" id="chatImage" accept="image/*" />
 
           <button type="submit">Kirim</button>
         </form>
@@ -123,7 +120,5 @@
     <script type="module" src="./js/order-form.js"></script>
 
     <script type="module" src="./js/order.js"></script>
-
-    <script type="module" src="./js/chat.js"></script>
   </body>
 </html>

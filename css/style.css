@@ -97,7 +97,9 @@ body {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .testimonial-card:hover {
@@ -912,15 +914,23 @@ video {
 
 .chat-form {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
+  align-items: center;
 }
 
-.chat-form input {
+.chat-form input[type="text"] {
   flex: 1;
+  min-width: 140px;
   padding: 10px 12px;
   border: 1px solid #e0e0e0;
   border-radius: 10px;
   font-size: 14px;
+}
+
+.chat-form-image {
+  flex: 1 1 100%;
+  font-size: 13px;
 }
 
 .chat-form button {
@@ -969,4 +979,57 @@ video {
   background: #d1e7dd;
   color: #0f5132;
   border: 1px solid #198754;
+}
+
+.chat-image {
+  max-width: 250px;
+  width: 100%;
+  border-radius: 12px;
+  display: block;
+  transition: transform 0.2s;
+}
+
+.chat-image-btn {
+  position: relative;
+  display: inline-block;
+  margin-top: 8px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: zoom-in;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.chat-image-btn:hover .chat-image {
+  transform: scale(1.03);
+}
+
+.chat-image-btn:hover .chat-image-hint {
+  opacity: 1;
+}
+
+.chat-image-hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 6px 8px;
+  background: rgba(0, 0, 0, 0.55);
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity 0.2s;
+  text-align: center;
+}
+
+#chatImage {
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.chat-container {
+  display: none;
 }

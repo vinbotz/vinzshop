@@ -11,6 +11,8 @@ import {
   setDoc,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+import { getStorage } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyBg-tQovIZv_4fZ6u8g5MNIOxJeeCpGrYw",
   authDomain: "vinzshop-2b961.firebaseapp.com",
@@ -23,5 +25,16 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
+const storage = getStorage(app);
 
-export { db, collection, addDoc, onSnapshot, doc, updateDoc, getDoc, setDoc };
+export {
+  db,
+  storage,
+  collection,
+  addDoc,
+  onSnapshot,
+  doc,
+  updateDoc,
+  getDoc,
+  setDoc,
+};

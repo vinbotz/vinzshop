@@ -14,8 +14,16 @@ import {
 
 import { buildOrderEmbed, sendDiscordWebhook } from "./webhook.js";
 import { formatTotal, getRegionLabel } from "./pricing.js";
+import {
+  bindChatImagePreview,
+  buildChatMessageHtml,
+  readFileAsDataUrl,
+  validateChatImage,
+} from "./chat-utils.js";
 
 const ordersContainer = document.getElementById("ordersContainer");
+
+bindChatImagePreview();
 
 const ordersRef = collection(db, "orders");
 
@@ -119,6 +127,13 @@ onSnapshot(ordersRef, (snapshot) => {
                 type="text"
                 id="input-${orderId}"
                 placeholder="Balas chat..."
+              >
+
+              <input
+                type="file"
+                id="image-${orderId}"
+                class="chat-form-image"
+                accept="image/*"
               >
 
               <button type="submit">
@@ -417,23 +432,10 @@ async function loadMessages(orderId) {
     chatBox.innerHTML = "";
 
     snapshot.forEach((msgDoc) => {
-      const msg = msgDoc.data();
-
-      chatBox.innerHTML += `
-
-          <div class="msg">
-
-            <b>
-              ${msg.sender}
-            </b>
-
-            <p>
-              ${msg.message}
-            </p>
-
-          </div>
-
-          `;
+      chatBox.innerHTML += buildChatMessageHtml(msgDoc.data(), {
+        wrapperClass: "msg",
+        imageClass: "chat-image",
+      });
     });
 
     chatBox.scrollTop = chatBox.scrollHeight;
@@ -446,20 +448,53 @@ window.sendAdminChat = async (e, orderId) => {
   e.preventDefault();
 
   const input = document.getElementById(`input-${orderId}`);
+  const imageInput = document.getElementById(`image-${orderId}`);
+  const submitBtn = e.target.querySelector('button[type="submit"]');
 
-  if (input.value === "") return;
+  if (!input) return;
 
-  await addDoc(
-    collection(db, "orders", orderId, "messages"),
+  const text = input.value.trim();
+  const file = imageInput?.files?.[0];
 
-    {
+  let imageData = "";
+
+  try {
+    if (file) {
+      const validation = validateChatImage(file);
+      if (!validation.ok) {
+        showAdminAlert("⚠️ Gambar", validation.error, "warning");
+        return;
+      }
+      imageData = await readFileAsDataUrl(file);
+    }
+
+    if (!text && !imageData) return;
+
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "⏳...";
+    }
+
+    await addDoc(collection(db, "orders", orderId, "messages"), {
       sender: "Admin",
-
-      message: input.value,
-
+      message: text,
+      image: imageData,
       createdAt: Date.now(),
-    },
-  );
+    });
 
-  input.value = "";
+    input.value = "";
+    if (imageInput) imageInput.value = "";
+  } catch (error) {
+    console.error("Gagal kirim chat admin:", error);
+    showAdminAlert(
+      "❌ Gagal",
+      "Gagal mengirim pesan chat. Coba lagi atau gunakan gambar lebih kecil.",
+      "error",
+    );
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Kirim";
+    }
+  }
 };

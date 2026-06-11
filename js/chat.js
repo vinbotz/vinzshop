@@ -8,10 +8,20 @@ import {
   orderBy,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+import {
+  bindChatImagePreview,
+  buildChatMessageHtml,
+  readFileAsDataUrl,
+  validateChatImage,
+} from "./chat-utils.js";
+
 const chatBox = document.getElementById("chatBox");
 const chatForm = document.getElementById("chatForm");
 const chatInput = document.getElementById("chatInput");
+const chatImage = document.getElementById("chatImage");
 const chatContainer = document.querySelector(".chat-container");
+
+bindChatImagePreview();
 
 let chatUnsubscribe = null;
 let activeChatOrderId = null;
@@ -26,6 +36,7 @@ export function resetLiveChat() {
 
   if (chatBox) chatBox.innerHTML = "";
   if (chatInput) chatInput.value = "";
+  if (chatImage) chatImage.value = "";
   if (chatContainer) chatContainer.style.display = "none";
 }
 
@@ -50,14 +61,7 @@ export function initLiveChat(orderId) {
     chatBox.innerHTML = "";
 
     snapshot.forEach((docSnap) => {
-      const msg = docSnap.data();
-
-      chatBox.innerHTML += `
-          <div class="chat-message">
-            <b>${msg.sender}</b>
-            <p>${msg.message}</p>
-          </div>
-          `;
+      chatBox.innerHTML += buildChatMessageHtml(docSnap.data());
     });
 
     chatBox.scrollTop = chatBox.scrollHeight;
@@ -67,15 +71,46 @@ export function initLiveChat(orderId) {
     e.preventDefault();
 
     const text = chatInput.value.trim();
-    if (!text) return;
+    const file = chatImage?.files?.[0];
+    const submitBtn = chatForm.querySelector('button[type="submit"]');
 
-    await addDoc(messagesRef, {
-      sender: "Customer",
-      message: text,
-      createdAt: Date.now(),
-    });
+    let imageData = "";
 
-    chatInput.value = "";
+    try {
+      if (file) {
+        const validation = validateChatImage(file);
+        if (!validation.ok) {
+          alert(validation.error);
+          return;
+        }
+        imageData = await readFileAsDataUrl(file);
+      }
+
+      if (!text && !imageData) return;
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "⏳ Mengirim...";
+      }
+
+      await addDoc(messagesRef, {
+        sender: "Customer",
+        message: text,
+        image: imageData,
+        createdAt: Date.now(),
+      });
+
+      chatInput.value = "";
+      if (chatImage) chatImage.value = "";
+    } catch (err) {
+      console.error("Upload chat gagal:", err);
+      alert("Gagal mengirim pesan. Coba lagi atau gunakan gambar lebih kecil.");
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Kirim";
+      }
+    }
   };
 }
 
