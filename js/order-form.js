@@ -1,8 +1,10 @@
 import {
   buildRobuxSelectHtml,
   formatTotal,
+  initPricing,
   isVilogAvailable,
   lookupPrice,
+  subscribePricing,
 } from "./pricing.js";
 
 const regionSelect = document.getElementById("region");
@@ -111,7 +113,11 @@ function renderDynamicForm() {
   bindRobuxPreview(region);
 }
 
-if (regionSelect && methodSelect) {
+async function initOrderForm() {
+  await initPricing();
+
+  if (!regionSelect || !methodSelect) return;
+
   regionSelect.addEventListener("change", () => {
     methodSelect.value = "";
     updateMethodOptions();
@@ -119,4 +125,12 @@ if (regionSelect && methodSelect) {
   });
 
   methodSelect.addEventListener("change", renderDynamicForm);
+
+  subscribePricing(() => {
+    if (regionSelect.value && methodSelect.value) {
+      renderDynamicForm();
+    }
+  });
 }
+
+initOrderForm();

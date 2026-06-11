@@ -14,6 +14,7 @@ import {
 
 import { buildOrderEmbed, sendDiscordWebhook } from "./webhook.js";
 import { formatTotal, getRegionLabel } from "./pricing.js";
+import { initAdminPricing } from "./admin-pricing.js";
 import {
   bindChatImagePreview,
   buildChatMessageHtml,
@@ -24,6 +25,7 @@ import {
 const ordersContainer = document.getElementById("ordersContainer");
 
 bindChatImagePreview();
+initAdminPricing();
 
 const ordersRef = collection(db, "orders");
 

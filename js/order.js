@@ -9,7 +9,12 @@ import {
 
 import { buildOrderEmbed, sendDiscordWebhook } from "./webhook.js";
 import { initLiveChat, resetLiveChat } from "./chat.js";
-import { formatTotal, getRegionLabel, lookupPrice } from "./pricing.js";
+import {
+  formatTotal,
+  getRegionLabel,
+  lookupPrice,
+  whenPricingReady,
+} from "./pricing.js";
 
 const paymentModal = document.getElementById("paymentModal");
 
@@ -598,6 +603,7 @@ window.addEventListener("click", (e) => {
     if (!robux || Number.isNaN(robux))
       return alert("Paket robux wajib dipilih");
 
+    await whenPricingReady();
     const priceInfo = lookupPrice(region, method, robux);
     if (!priceInfo) {
       return alert("Paket robux tidak valid. Silakan pilih ulang.");

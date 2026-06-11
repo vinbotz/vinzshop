@@ -701,6 +701,167 @@ video {
   margin-top: 10px;
 }
 
+.admin-top-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.btn-toggle-pricing {
+  background: #ff4fa0;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(255, 79, 160, 0.25);
+  transition: all 0.2s ease;
+}
+
+.btn-toggle-pricing:hover {
+  background: #ff2a7e;
+}
+
+.btn-toggle-pricing.is-active {
+  background: white;
+  color: #ff2a7e;
+  border: 2px solid #ff4fa0;
+}
+
+#pricingSettings {
+  display: none;
+}
+
+#pricingSettings.is-open {
+  display: block;
+}
+
+.admin-pricing-panel {
+  background: white;
+  border: 2px solid #ffd1e8;
+  border-radius: 18px;
+  padding: 20px;
+  margin-bottom: 25px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.admin-pricing-header h2 {
+  margin: 0 0 8px;
+  color: #ff2a7e;
+}
+
+.admin-pricing-header p {
+  margin: 0 0 16px;
+  color: #666;
+  line-height: 1.5;
+}
+
+.admin-pricing-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.admin-pricing-toolbar select {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #ffd1e8;
+  border-radius: 10px;
+  font-size: 15px;
+}
+
+.admin-pricing-table-wrap {
+  overflow-x: auto;
+  margin-bottom: 16px;
+}
+
+.admin-pricing-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-pricing-table th,
+.admin-pricing-table td {
+  padding: 10px;
+  border-bottom: 1px solid #ffe3f1;
+  text-align: left;
+}
+
+.admin-pricing-table th {
+  background: #fff0f7;
+  color: #ff2a7e;
+}
+
+.pricing-input {
+  width: 100%;
+  min-width: 120px;
+  padding: 10px;
+  border: 2px solid #ffd1e8;
+  border-radius: 8px;
+}
+
+.admin-pricing-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-save-pricing,
+.btn-reset-pricing {
+  flex: 1;
+  min-width: 180px;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-save-pricing {
+  background: #ff4fa0;
+  color: white;
+}
+
+.btn-reset-pricing {
+  background: white;
+  color: #ff4fa0;
+  border: 2px solid #ff4fa0;
+}
+
+.btn-add-pricing-row {
+  width: 100%;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  border: 2px dashed #ff9ec8;
+  border-radius: 10px;
+  background: #fff8fc;
+  color: #ff2a7e;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-add-pricing-row:hover {
+  background: #fff0f7;
+  border-color: #ff4fa0;
+}
+
+.btn-delete-pricing-row {
+  border: none;
+  background: #ffe3ec;
+  color: #c82333;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.btn-delete-pricing-row:hover {
+  background: #f8d7da;
+}
+
 .admin-order {
   background: white;
   border: 2px solid #ffd1e8;
