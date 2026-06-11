@@ -847,15 +847,23 @@ video {
   border-color: #ff4fa0;
 }
 
+.pricing-action-cell {
+  width: 110px;
+  text-align: center;
+}
+
 .btn-delete-pricing-row {
   border: none;
   background: #ffe3ec;
   color: #c82333;
-  width: 42px;
+  min-width: 92px;
   height: 42px;
+  padding: 0 12px;
   border-radius: 10px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 14px;
+  font-weight: bold;
+  white-space: nowrap;
 }
 
 .btn-delete-pricing-row:hover {

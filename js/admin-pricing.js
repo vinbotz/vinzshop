@@ -73,17 +73,30 @@ function handleAddPackage() {
   renderPricingEditor();
 }
 
-function handleDeletePackage(index) {
+function confirmDeletePackage(index) {
   const category = getActiveCategory();
   const packages = draftPrices[category.region][category.key];
 
   if (!packages[index]) return;
 
   const robux = packages[index].robux;
-  const confirmed = window.confirm(
-    `Hapus paket ${robux || "(baru)"} Robux dari kategori ini?`,
-  );
-  if (!confirmed) return;
+  const message = `Hapus paket ${robux || "(baru)"} Robux dari "${category.label}"?\n\nKlik Simpan Harga setelah hapus agar perubahan tersimpan.`;
+
+  if (typeof window.showAdminConfirm === "function") {
+    window.showAdminConfirm(message, () => handleDeletePackage(index));
+    return;
+  }
+
+  if (window.confirm(message)) {
+    handleDeletePackage(index);
+  }
+}
+
+function handleDeletePackage(index) {
+  const category = getActiveCategory();
+  const packages = draftPrices[category.region][category.key];
+
+  if (!packages[index]) return;
 
   packages.splice(index, 1);
   renderPricingEditor();
@@ -182,14 +195,14 @@ function renderPricingEditor() {
             />
           </td>
           ${defaultPriceField}
-          <td>
+          <td class="pricing-action-cell">
             <button
               type="button"
               class="btn-delete-pricing-row"
               data-index="${index}"
-              title="Hapus nominal"
+              title="Hapus baris ini"
             >
-              🗑️
+              🗑️ Hapus
             </button>
           </td>
         </tr>
@@ -243,10 +256,12 @@ function renderPricingEditor() {
     </section>
   `;
 
-  document.getElementById("pricingCategory")?.addEventListener("change", (e) => {
-    activeCategoryId = e.target.value;
-    renderPricingEditor();
-  });
+  document
+    .getElementById("pricingCategory")
+    ?.addEventListener("change", (e) => {
+      activeCategoryId = e.target.value;
+      renderPricingEditor();
+    });
 
   bindPricingInputs();
 
@@ -254,7 +269,7 @@ function renderPricingEditor() {
     .querySelectorAll(".btn-delete-pricing-row")
     .forEach((button) => {
       button.addEventListener("click", () => {
-        handleDeletePackage(Number(button.dataset.index));
+        confirmDeletePackage(Number(button.dataset.index));
       });
     });
 
