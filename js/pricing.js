@@ -87,6 +87,18 @@ export const DEFAULT_PRICES = {
       { robux: 1500, total: 55 },
       { robux: 2000, total: 73, badge: "⭐" },
     ],
+    username: [
+      { robux: 100, total: 8 },
+      { robux: 200, total: 12 },
+      { robux: 300, total: 16 },
+      { robux: 400, total: 20 },
+      { robux: 500, total: 24 },
+      { robux: 600, total: 28 },
+      { robux: 700, total: 32 },
+      { robux: 800, total: 36 },
+      { robux: 900, total: 40 },
+      { robux: 1000, total: 44 },
+],
   },
 };
 
@@ -151,6 +163,9 @@ function mergePrices(defaults, stored) {
         stored?.malay?.gamepass,
       ),
       vilog: mergePackageArrays(defaults.malay.vilog, stored?.malay?.vilog),
+      username: mergePackageArrays(
+        defaults.malay.username,
+        stored?.malay?.username,
     },
   };
 }
@@ -268,6 +283,21 @@ export function getRobuxPackageGroups(region, method) {
         packages: currentPrices.malay.vilog,
       },
     ];
+  }
+
+  if (method === "USERNAME") {
+    return [
+    {
+        label:
+        region === "malay"
+          ? "👤 VIA USERNAME (MY)"
+          : "👤 VIA USERNAME",
+      packages:
+        region === "malay"
+          ? currentPrices.malay.username
+          : currentPrices.indo.username,
+    },
+  ];
   }
 
   if (method === "Gamepass") {
@@ -444,6 +474,18 @@ export function buildPricelistHtml() {
     html += buildPriceItem(`${pkg.robux} Robux`, buildMalayPrice(pkg));
   }
 
+  html += `
+  <hr />
+  <h3>👤 VIA USERNAME</h3>
+`;
+
+for (const pkg of prices.malay.username) {
+  html += buildPriceItem(
+    `${pkg.robux} Robux`,
+    buildMalayPrice(pkg)
+  );
+    }
+
   return html;
 }
 
@@ -493,6 +535,15 @@ export const PRICE_CATEGORIES = [
     label: "🇲🇾 VILOG",
     region: "malay",
     key: "vilog",
+    hasDefaultPrice: false,
+    currency: "MYR",
+  },
+
+  {
+    id: "malay_username",
+    label: "🇲🇾 Via Username",
+    region: "malay",
+    key: "username",
     hasDefaultPrice: false,
     currency: "MYR",
   },
