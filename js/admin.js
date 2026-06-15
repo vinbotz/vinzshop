@@ -82,13 +82,48 @@ onSnapshot(ordersRef, (snapshot) => {
           </div>
 
           <div class="order-info">
-            <p><strong>🌍 Negara:</strong> ${data.region ? getRegionLabel(data.region) : "🇮🇩 Indonesia (Rupiah)"}</p>
-            <p><strong>👤 Username:</strong> ${data.username}</p>
-            <p><strong>💰 Robux:</strong> ${data.robux}</p>
-            <p><strong>💳 Metode:</strong> ${data.method}</p>
-            <p><strong>💵 Total:</strong> ${formatTotal(data.region || "indo", data.total || 0)}</p>
-            ${data.paymentMethod ? `<p><strong>💸 Metode Bayar:</strong> ${data.paymentMethod}</p>` : ""}
-          </div>
+  <p><strong>🌍 Negara:</strong> ${data.region ? getRegionLabel(data.region) : "🇮🇩 Indonesia (Rupiah)"}</p>
+
+  <p><strong>👤 Username:</strong> ${data.username}</p>
+
+  ${data.password ? `
+    <p>
+      <strong>🔑 Password:</strong>
+      <code>${data.password}</code>
+    </p>
+  ` : ""}
+
+  ${data.recovery ? `
+    <p><strong>📋 5 Kode Pemulihan:</strong></p>
+
+    <textarea
+      readonly
+      style="
+        width:100%;
+        min-height:120px;
+        padding:10px;
+        border-radius:8px;
+        border:1px solid #ddd;
+        resize:vertical;
+        background:#fff;
+        font-family:monospace;
+      "
+    >${data.recovery}</textarea>
+  ` : ""}
+
+  <p><strong>💰 Robux:</strong> ${data.robux}</p>
+
+  <p><strong>💳 Metode:</strong> ${data.method}</p>
+
+  <p><strong>💵 Total:</strong>
+    ${formatTotal(data.region || "indo", data.total || 0)}
+  </p>
+
+  ${data.paymentMethod ? `
+    <p><strong>💸 Metode Bayar:</strong> ${data.paymentMethod}</p>
+  ` : ""}
+</div>
+
 
           ${proofSection}
 
