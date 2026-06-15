@@ -29,6 +29,8 @@ function updateMethodOptions() {
   }
 
   methodSelect.innerHTML += '<option value="Gamepass">Gamepass</option>';
+  methodSelect.innerHTML +=
+  '<option value="USERNAME">📦 Via Username</option>';
 
   if (isVilogAvailable(region)) {
     methodSelect.innerHTML +=
