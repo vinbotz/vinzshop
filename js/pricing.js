@@ -37,6 +37,18 @@ export const DEFAULT_PRICES = {
       { robux: 1500, total: 225000 },
       { robux: 2000, total: 300000 },
     ],
+    username: [
+      { robux: 100, total: 28000 },
+      { robux: 200, total: 41000 },
+      { robux: 300, total: 54000 },
+      { robux: 400, total: 67000 },
+      { robux: 500, total: 80000 },
+      { robux: 600, total: 93000 },
+      { robux: 700, total: 106000 },
+      { robux: 800, total: 119000 },
+      { robux: 900, total: 132000 },
+      { robux: 1000, total: 145000 },
+    ],
   },
   malay: {
     gamepass: [
@@ -128,6 +140,10 @@ function mergePrices(defaults, stored) {
         stored?.indo?.gamepassGold,
       ),
       vilog: mergePackageArrays(defaults.indo.vilog, stored?.indo?.vilog),
+      username: mergePackageArrays(
+        defaults.indo.username,
+        stored?.indo?.username
+      ),
     },
     malay: {
       gamepass: mergePackageArrays(
@@ -275,6 +291,14 @@ export function getRobuxPackageGroups(region, method) {
       },
     ];
   }
+  if (method === "USERNAME") {
+  return [
+    {
+      label: "👤 VIA USERNAME",
+      packages: currentPrices.indo.username,
+    },
+  ];
+  }
 
   return [];
 }
@@ -389,6 +413,15 @@ export function buildPricelistHtml() {
   }
 
   html += `
+  <hr />
+  <h3>👤 VIA USERNAME</h3>
+  `;
+
+  for (const pkg of prices.indo.username) {
+    html += buildPriceItem(`${pkg.robux} ROBUX`, buildIndoVilogPrice(pkg));
+}
+
+  html += `
     <br />
     <h2>🇲🇾 VINZSHOP MALAYSIA PRICE LIST</h2>
     <p>
@@ -439,6 +472,14 @@ export const PRICE_CATEGORIES = [
     hasDefaultPrice: false,
     currency: "IDR",
   },
+  {
+    id: "indo_username",
+    label: "🇮🇩 Via Username",
+    region: "indo",
+    key: "username",
+    hasDefaultPrice: false,
+    currency: "IDR",
+},
   {
     id: "malay_gamepass",
     label: "🇲🇾 Gamepass",
