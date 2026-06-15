@@ -166,6 +166,7 @@ function mergePrices(defaults, stored) {
       username: mergePackageArrays(
         defaults.malay.username,
         stored?.malay?.username,
+      ),
     },
   };
 }
@@ -320,13 +321,6 @@ export function getRobuxPackageGroups(region, method) {
         packages: currentPrices.indo.vilog,
       },
     ];
-  }
-  if (method === "USERNAME") {
-  return [
-    {
-      label: "👤 VIA USERNAME",
-      packages: currentPrices.indo.username,
-    },
   ];
   }
 
