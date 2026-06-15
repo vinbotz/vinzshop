@@ -321,7 +321,6 @@ export function getRobuxPackageGroups(region, method) {
         packages: currentPrices.indo.vilog,
       },
     ];
-  ];
   }
 
   return [];
