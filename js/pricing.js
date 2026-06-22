@@ -250,7 +250,9 @@ export function subscribePricing(callback) {
     );
   }
 
-  if (pricingReady) callback(currentPrices);
+  if (pricingReady) {
+  callback(currentPrices, currentUsernameStock);
+  }
 
   return () => {
     pricingListeners.delete(callback);
@@ -270,9 +272,10 @@ export async function savePrices(prices) {
 
 export async function resetPricesToDefault() {
   await setDoc(PRICES_DOC, {
-    ...clonePrices(DEFAULT_PRICES),
-    updatedAt: new Date().toISOString(),
-  });
+  ...clonePrices(DEFAULT_PRICES),
+  usernameStock: DEFAULT_USERNAME_STOCK,
+  updatedAt: new Date().toISOString(),
+});
   applyPrices(DEFAULT_PRICES);
 }
 
@@ -548,6 +551,7 @@ export const PRICE_CATEGORIES = [
     hasDefaultPrice: false,
     currency: "MYR",
   },
+  ];
 
   export function getUsernameStock() {
   return structuredClone(currentUsernameStock);
