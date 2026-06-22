@@ -14,6 +14,10 @@ const togglePricingBtn = document.getElementById("togglePricingBtn");
 let draftPrices = getPrices();
 let isPricingPanelOpen = false;
 let activeCategoryId = PRICE_CATEGORIES[0].id;
+let usernameStock = {
+  indo: true,
+  malay: true,
+};
 
 function getActiveCategory() {
   return (
@@ -212,6 +216,27 @@ function renderPricingEditor() {
 
   pricingSettingsRoot.innerHTML = `
     <section class="admin-pricing-panel">
+    <div class="admin-stock-setting">
+  <label>
+    <input
+      type="checkbox"
+      id="indoUsernameStock"
+      ${usernameStock.indo ? "checked" : ""}
+    />
+    🇮🇩 Username Ready
+  </label>
+
+  <label>
+    <input
+      type="checkbox"
+      id="malayUsernameStock"
+      ${usernameStock.malay ? "checked" : ""}
+    />
+    🇲🇾 Username Ready
+  </label>
+</div>
+
+    
       <div class="admin-pricing-header">
         <h2>💸 Pengaturan Harga Pricelist</h2>
         <p>Harga di sini dipakai bersama untuk halaman pricelist dan combo box formulir order.</p>
@@ -288,6 +313,13 @@ async function handleSavePricing() {
   const saveBtn = document.getElementById("savePricingBtn");
   if (!saveBtn) return;
 
+  usernameStock.indo =
+  document.getElementById("indoUsernameStock")?.checked;
+
+usernameStock.malay =
+  document.getElementById("malayUsernameStock")?.checked;
+  
+
   for (const category of PRICE_CATEGORIES) {
     sortCategoryPackages(category.region, category.key);
   }
@@ -320,7 +352,6 @@ async function handleSavePricing() {
     saveBtn.textContent = "💾 Simpan Harga";
   }
 }
-
 async function handleResetPricing() {
   const confirmed = window.confirm(
     "Reset semua harga ke nilai default bawaan aplikasi?",
