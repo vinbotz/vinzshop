@@ -180,13 +180,48 @@ function mergePrices(defaults, stored) {
   };
 }
 
-function applyPrices(prices) {
-  currentPrices = clonePrices(prices);
+function mergePrices(defaults, stored) {
+  return {
+    indo: {
+      gamepassSilver: mergePackageArrays(
+        defaults.indo.gamepassSilver,
+        stored?.indo?.gamepassSilver,
+      ),
+      gamepassGold: mergePackageArrays(
+        defaults.indo.gamepassGold,
+        stored?.indo?.gamepassGold,
+      ),
+      vilog: mergePackageArrays(
+        defaults.indo.vilog,
+        stored?.indo?.vilog
+      ),
+      username: mergePackageArrays(
+        defaults.indo.username,
+        stored?.indo?.username
+      ),
+    },
 
-  currentUsernameStock = {
-    ...DEFAULT_USERNAME_STOCK,
-    ...(prices.usernameStock || {}),
+    malay: {
+      gamepass: mergePackageArrays(
+        defaults.malay.gamepass,
+        stored?.malay?.gamepass,
+      ),
+      vilog: mergePackageArrays(
+        defaults.malay.vilog,
+        stored?.malay?.vilog,
+      ),
+      username: mergePackageArrays(
+        defaults.malay.username,
+        stored?.malay?.username,
+      ),
+    },
+
+    usernameStock: {
+      ...DEFAULT_USERNAME_STOCK,
+      ...(stored?.usernameStock || {}),
+    },
   };
+}
 
   pricingListeners.forEach((cb) =>
     cb(currentPrices, currentUsernameStock)
@@ -213,11 +248,17 @@ export function initPricing() {
       if (snap.exists()) {
         applyPrices(mergePrices(DEFAULT_PRICES, snap.data()));
       } else {
-        applyPrices(DEFAULT_PRICES);
+        applyPrices({
+  ...DEFAULT_PRICES,
+  usernameStock: DEFAULT_USERNAME_STOCK,
+});
       }
     } catch (error) {
       console.error("Gagal memuat harga:", error);
-      applyPrices(DEFAULT_PRICES);
+      applyPrices({
+  ...DEFAULT_PRICES,
+  usernameStock: DEFAULT_USERNAME_STOCK,
+});
     } finally {
       markPricingReady();
     }
