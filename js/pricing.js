@@ -102,6 +102,11 @@ export const DEFAULT_PRICES = {
   },
 };
 
+export const DEFAULT_USERNAME_STOCK = {
+  indo: true,
+  malay: true,
+};
+
 const PRICES_DOC = doc(db, "settings", "prices");
 
 let currentPrices = structuredClone(DEFAULT_PRICES);
@@ -118,6 +123,10 @@ let unsubscribePricing = null;
 function clonePrices(prices) {
   return structuredClone(prices);
 }
+
+let currentUsernameStock = structuredClone(
+  DEFAULT_USERNAME_STOCK
+);
 
 function mergePackageArrays(defaultArr, storedArr) {
   if (!Array.isArray(storedArr)) return clonePrices(defaultArr);
@@ -173,7 +182,15 @@ function mergePrices(defaults, stored) {
 
 function applyPrices(prices) {
   currentPrices = clonePrices(prices);
-  pricingListeners.forEach((cb) => cb(currentPrices));
+
+  currentUsernameStock = {
+    ...DEFAULT_USERNAME_STOCK,
+    ...(prices.usernameStock || {}),
+  };
+
+  pricingListeners.forEach((cb) =>
+    cb(currentPrices, currentUsernameStock)
+  );
 }
 
 function markPricingReady() {
@@ -532,12 +549,6 @@ export const PRICE_CATEGORIES = [
     currency: "MYR",
   },
 
-  {
-    id: "malay_username",
-    label: "🇲🇾 Via Username",
-    region: "malay",
-    key: "username",
-    hasDefaultPrice: false,
-    currency: "MYR",
-  },
-];
+  export function getUsernameStock() {
+  return structuredClone(currentUsernameStock);
+}
