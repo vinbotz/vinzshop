@@ -177,45 +177,6 @@ function mergePrices(defaults, stored) {
         stored?.malay?.username,
       ),
     },
-  };
-}
-
-function mergePrices(defaults, stored) {
-  return {
-    indo: {
-      gamepassSilver: mergePackageArrays(
-        defaults.indo.gamepassSilver,
-        stored?.indo?.gamepassSilver,
-      ),
-      gamepassGold: mergePackageArrays(
-        defaults.indo.gamepassGold,
-        stored?.indo?.gamepassGold,
-      ),
-      vilog: mergePackageArrays(
-        defaults.indo.vilog,
-        stored?.indo?.vilog
-      ),
-      username: mergePackageArrays(
-        defaults.indo.username,
-        stored?.indo?.username
-      ),
-    },
-
-    malay: {
-      gamepass: mergePackageArrays(
-        defaults.malay.gamepass,
-        stored?.malay?.gamepass,
-      ),
-      vilog: mergePackageArrays(
-        defaults.malay.vilog,
-        stored?.malay?.vilog,
-      ),
-      username: mergePackageArrays(
-        defaults.malay.username,
-        stored?.malay?.username,
-      ),
-    },
-
     usernameStock: {
       ...DEFAULT_USERNAME_STOCK,
       ...(stored?.usernameStock || {}),
@@ -223,11 +184,18 @@ function mergePrices(defaults, stored) {
   };
 }
 
+  function applyPrices(prices) {
+  currentPrices = clonePrices(prices);
+
+  currentUsernameStock = {
+    ...DEFAULT_USERNAME_STOCK,
+    ...(prices.usernameStock || {}),
+  };
+
   pricingListeners.forEach((cb) =>
     cb(currentPrices, currentUsernameStock)
   );
 }
-
 function markPricingReady() {
   if (!pricingReady) {
     pricingReady = true;
@@ -281,9 +249,13 @@ export function subscribePricing(callback) {
       PRICES_DOC,
       (snap) => {
         if (snap.exists()) {
-          applyPrices(mergePrices(DEFAULT_PRICES, snap.data()));
+          applyPrices(mergePrices(DEFAULT_PRICES, 
+          snap.data()))
         } else {
-          applyPrices(DEFAULT_PRICES);
+          applyPrices({
+            ...DEFAULT_PRICES,
+            usernameStock: DEFAULT_USERNAME_STOCK,
+          });
         }
         markPricingReady();
       },
@@ -317,7 +289,10 @@ export async function resetPricesToDefault() {
   usernameStock: DEFAULT_USERNAME_STOCK,
   updatedAt: new Date().toISOString(),
 });
-  applyPrices(DEFAULT_PRICES);
+  applyPrices({
+  ...DEFAULT_PRICES,
+  usernameStock: DEFAULT_USERNAME_STOCK,
+});
 }
 
 function formatIdr(amount) {
@@ -589,6 +564,14 @@ export const PRICE_CATEGORIES = [
     label: "🇲🇾 VILOG",
     region: "malay",
     key: "vilog",
+    hasDefaultPrice: false,
+    currency: "MYR",
+  },
+  {
+    id: "malay_username",
+    label: "🇲🇾 Via Username",
+    region: "malay",
+    key: "username",
     hasDefaultPrice: false,
     currency: "MYR",
   },
