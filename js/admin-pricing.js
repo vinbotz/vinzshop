@@ -316,7 +316,7 @@ async function handleSavePricing() {
   usernameStock.indo =
   document.getElementById("indoUsernameStock")?.checked;
 
-usernameStock.malay =
+  usernameStock.malay =
   document.getElementById("malayUsernameStock")?.checked;
   
 
@@ -335,7 +335,10 @@ usernameStock.malay =
   saveBtn.textContent = "⏳ Menyimpan...";
 
   try {
-    await savePrices(draftPrices);
+    await savePrices({
+  ...draftPrices,
+  usernameStock,
+});
     window.showAdminAlert?.(
       "✅ Harga Tersimpan",
       "Harga pricelist dan combo box order sudah diperbarui.",
