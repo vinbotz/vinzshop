@@ -2,6 +2,7 @@ import {
   DEFAULT_PRICES,
   PRICE_CATEGORIES,
   getPrices,
+  getUsernameStock,
   initPricing,
   resetPricesToDefault,
   savePrices,
@@ -18,6 +19,7 @@ let usernameStock = {
   indo: true,
   malay: true,
 };
+let usernameStock = getUsernameStock();
 
 function getActiveCategory() {
   return (
@@ -403,10 +405,12 @@ export async function initAdminPricing() {
   await initPricing();
   draftPrices = getPrices();
 
-  subscribePricing((prices) => {
-    draftPrices = structuredClone(prices);
-    if (isPricingPanelOpen) {
-      renderPricingEditor();
-    }
-  });
+  subscribePricing((prices, stock) => {
+  draftPrices = structuredClone(prices);
+  usernameStock = structuredClone(stock);
+
+  if (isPricingPanelOpen) {
+    renderPricingEditor();
+  }
+});
 }
