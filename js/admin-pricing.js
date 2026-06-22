@@ -15,12 +15,11 @@ const togglePricingBtn = document.getElementById("togglePricingBtn");
 let draftPrices = getPrices();
 let isPricingPanelOpen = false;
 let activeCategoryId = PRICE_CATEGORIES[0].id;
-let usernameStock = getUsernameStock();
+let usernameStock = getUsernameStock() || {
+  indo: true,
+  malay: true,
+};
 
-const savedStock = getUsernameStock();
-if (savedStock) {
-  usernameStock = savedStock;
-}
 function getActiveCategory() {
   return (
     PRICE_CATEGORIES.find((item) => item.id === activeCategoryId) ||
